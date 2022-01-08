@@ -7,19 +7,17 @@ import {
   GuildMember,
 } from "discord.js";
 import { ButtonComponent, Discord, Slash, SlashOption } from "discordx";
-import { fileURLToPath } from "url";
-import Handlebars from "handlebars";
-import path from 'path';
-import { dirname } from "@discordx/importer";
-import fs from 'fs';
-
 import { UserData } from '../../../api/UserData.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const fileName = path.basename(__filename)?.split('.')[0];
+import HBars from '../../../api/HBars.js';
+import { Hbs } from '../../../api/HBars.js';
+const hbz = new Hbs(import.meta.url);
 
-const hbs = fs.readFileSync(dirname(import.meta.url) + `/${fileName}.hbs`, 'utf8');
-const template = Handlebars.compile(hbs.toString());
+const __filename = HBars.fileURLToPath(import.meta.url);
+const fileName = HBars.getFileName(__filename);
+
+const hbs = HBars.fs.readFileSync(HBars.dirname(import.meta.url) + `/${fileName}.hbs`, 'utf8');
+const template = HBars.Handlebars.compile(hbs.toString());
 
 @Discord()
 class buttonExample {
@@ -51,6 +49,8 @@ class buttonExample {
       content: template({ basic: true, ...userData }),
       components: [row],
     });
+
+    hbz.getHandleBarsTemplateCompiled({ basic: true, ...userData});
   }
 
   @ButtonComponent("skills-btn")
