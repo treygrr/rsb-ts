@@ -8,16 +8,9 @@ import {
 } from "discord.js";
 import { ButtonComponent, Discord, Slash, SlashOption } from "discordx";
 import { UserData } from '../../../api/UserData.js';
-
-import HBars from '../../../api/HBars.js';
 import { Hbs } from '../../../api/HBars.js';
-const hbz = new Hbs(import.meta.url);
 
-const __filename = HBars.fileURLToPath(import.meta.url);
-const fileName = HBars.getFileName(__filename);
-
-const hbs = HBars.fs.readFileSync(HBars.dirname(import.meta.url) + `/${fileName}.hbs`, 'utf8');
-const template = HBars.Handlebars.compile(hbs.toString());
+const hbs = new Hbs(import.meta.url);
 
 @Discord()
 class buttonExample {
@@ -46,11 +39,13 @@ class buttonExample {
       return interaction.editReply("User not found 😬");
     }
     interaction.editReply({
-      content: template({ basic: true, ...userData }),
+      content: hbs.getHandleBarsTemplateCompiled({ basic: true, ...userData }),
       components: [row],
     });
 
-    hbz.getHandleBarsTemplateCompiled({ basic: true, ...userData});
+    setTimeout(function() {
+      interaction.deleteReply();
+    }, 60000);
   }
 
   @ButtonComponent("skills-btn")
@@ -61,6 +56,6 @@ class buttonExample {
     }
     interaction.deferReply({ephemeral: true});
     const userData = await new UserData(this.username).getUserData();
-    interaction.editReply(template({ showSkills: true, ...userData}));
+    interaction.editReply(hbs.getHandleBarsTemplateCompiled({ showSkills: true, ...userData}));
   }
 }

@@ -7,8 +7,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "dev": "node --loader ts-node/esm/transpile-only src/main.ts",
-    "start": "nodemon --exec node --loader ts-node/esm/transpile-only src/main.ts"
+    "start": "node --loader ts-node/esm/transpile-only src/main.ts",
+    "dev": "nodemon --exec node --loader ts-node/esm/transpile-only src/main.ts",
+    "updateItems": "node --loader ts-node/esm/transpile-only items.ts"
   },
   "keywords": [],
   "author": "",
