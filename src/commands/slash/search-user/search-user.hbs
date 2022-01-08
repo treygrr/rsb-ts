@@ -1,0 +1,23 @@
+{{#basic}}
+**Name:** {{name}}
+```
+LoggedIn: {{#if loggedIn}}Online{{else}}Offline{{/if}}
+Total Skill: {{totalskill}}
+Quests Complete: {{questscomplete}}
+Total Exp: {{totalxp}}
+Ranged: {{ranged}}
+Magic: {{magic}}
+Melee: {{melee}}
+Combat Level: {{combatlevel}}
+```
+{{/basic}}
+{{#showSkills}}
+```
+{{#each skillvalues}}
+Level: {{level}}
+xp: {{xp}}
+rank: {{rank}}
+id: {{id}} <- will fix later
+{{/each}}
+```
+{{/showSkills}}
