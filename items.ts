@@ -34,7 +34,11 @@ const saveItemFile = async (itemName: string, data: Item, itemId: number) => {
   if (fileExists) {
     try {
       const json = JSON.parse(fileContents);
-      if (doesItemExist(json, itemId)) return;
+      if (doesItemExist(json, itemId)) {
+        console.log(`Item already accounted for: ${itemName}`);
+        return;
+      }
+      console.log(`Item not in Database!: ${itemName}`);
       json.push(data);
       fs.writeFileSync(`./src/itemDataBase/items/${itemName}.json`, JSON.stringify(json));
     } catch (error) {
@@ -45,6 +49,7 @@ const saveItemFile = async (itemName: string, data: Item, itemId: number) => {
   try {
     const dataArray = [data];
     fs.writeFileSync(`./src/itemDataBase/items/${itemName}.json`, JSON.stringify(dataArray));
+    console.log(`Item not in Database!: ${itemName}`);
   }
   catch (error) { }
 };
@@ -135,14 +140,12 @@ const get = async (itemNumber: number) => {
     saveItemFile(`0-no-results`, item, itemNumber);
     found = false
   }
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  (found) ? console.log(`${itemNumber} - ${item[itemNumber].name}`) : console.log(`${itemNumber} - no results`);
-
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 };
 
 
-for (let i = 5034; i < 5064; i++) {
+for (let i = 0; i < 50000; i++) {
   await get(i);
 }
+
 save(ItemResults);
