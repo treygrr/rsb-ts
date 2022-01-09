@@ -1,5 +1,7 @@
 import puppeteer from 'puppeteer';
 import * as cheerio from 'cheerio';
+import Handlebars from 'handlebars';
+import fs from 'fs';
 
 interface ItemData {
   image: string,
@@ -17,6 +19,8 @@ interface PageData {
 
 interface DataReturn {
   items?: ItemData[],
+  exactMatch?: ItemData,
+  matchedResults?: ItemData[],
   errors?: Boolean,
   errorMessages: string[],
   pageData?: PageData,
@@ -63,8 +67,8 @@ const search = async (query: string) => {
   table?.screenshot({ path: 'table.png' });
 
   // check if there are multeple pages
-  const pageData = await getPageData(page);
-  data.pageData = pageData;
+    const pageData = await getPageData(page);
+    data.pageData = pageData;
 
   // for each page get data
   for (let i = data?.pageData?.currentPage || 1; i <= (data?.pageData?.totalPageNumber || 1); i++) {
@@ -86,13 +90,20 @@ const search = async (query: string) => {
   }
 
   // check for matches
-  if (data?.items?.length) {
-    checkForMatches(query, data.items);
+  data.matchedResults = checkForMatches(query, data?.items ?? []);
+  if (data.matchedResults?.length === 1) {
+    data.exactMatch = data.matchedResults[0];
   }
 
-  console.log('This is all data after pages are scraped', data);
+  if (data.matchedResults?.length === 0 && data?.items?.length) {
+    data.errors = true;
+    data.errorMessages.push('No exact matches found');
+  }
 
-
+  console.log(data)
+  if ( data.items ) {
+    screenShotResults(browser, data.items);
+  }
 };
 
 const goToNextPage =  async (page: any, pageNumber: number) => {
@@ -149,10 +160,25 @@ const checkForMatches = (query: string, item: ItemData[]): ItemData[] => {
   const match = item.filter((item: any) => {
     return item.name.toLowerCase() === query.toLowerCase();
   });
-  console.log('this is match', match);
+  console.log('this is match count', match.length);
   return match;
 }
 
 
+const getHandleBarsTemplateFile = (): string => {
+  return fs.readFileSync(`./ResultsTable.hbs`, 'utf8');
+}
 
-search('sword');
+const getHandleBarsTemplateCompiled = (items: ItemData[]): any =>{
+  return Handlebars.compile(getHandleBarsTemplateFile())(items);
+}
+
+const screenShotResults = async (browser: any, dataItems: ItemData[]) => {
+  const page = await browser.newPage();
+  await page.setContent(getHandleBarsTemplateCompiled(dataItems));
+  const table = await page.$('table');
+  await table?.screenshot({ path: 'table.png' });
+
+}
+
+search('dragon sword');
