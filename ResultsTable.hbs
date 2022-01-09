@@ -62,10 +62,17 @@
         </tr>
       </thead>
       <tbody>
-        {{#each dataItems}}<tr>
-          <td>Dom</td>
+        <tr>
+          <td>{{ name }}</td>
+        </tr>
+        {{#each items}}
+        <tr>
+          <td>{{ item.name }}</td>
+          <td></td>
+          <td></td>
           <td>6000</td>
         </tr>
+        {{/each}}
       </tbody>
     </table>
   </div>

@@ -169,16 +169,16 @@ const getHandleBarsTemplateFile = (): string => {
   return fs.readFileSync(`./ResultsTable.hbs`, 'utf8');
 }
 
-const getHandleBarsTemplateCompiled = (items: ItemData[]): any =>{
+const getHandleBarsTemplateCompiled = (items: any): any =>{
   return Handlebars.compile(getHandleBarsTemplateFile())(items);
 }
 
-const screenShotResults = async (browser: any, dataItems: ItemData[]) => {
+const screenShotResults = async (browser: any, dataItems: DataReturn) => {
   const page = await browser.newPage();
-  await page.setContent(getHandleBarsTemplateCompiled(dataItems));
-  const table = await page.$('table');
-  await table?.screenshot({ path: 'table.png' });
 
+  await page.setContent(getHandleBarsTemplateCompiled({ ...dataItems }));
+  const table = await page.$('div');
+  await table.screenshot({ path: 'resultsTable.png' });
 }
 
 search('dragon sword');
