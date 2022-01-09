@@ -175,10 +175,13 @@ const getHandleBarsTemplateCompiled = (items: any): any =>{
 
 const screenShotResults = async (browser: any, dataItems: DataReturn) => {
   const page = await browser.newPage();
-
-  await page.setContent(getHandleBarsTemplateCompiled({ ...dataItems }));
-  const table = await page.$('div');
-  await table.screenshot({ path: 'resultsTable.png' });
+  const build = {
+    name: 'trey',
+    items: { ...dataItems }
+  }
+  await page.setContent(getHandleBarsTemplateCompiled({ name: 'Trey', data: build.items }));
+  const table = await page.$('table');
+  await table?.screenshot({ path: 'table.png' });
 }
 
 search('dragon sword');

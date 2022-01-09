@@ -64,12 +64,11 @@
       <tbody>
         <tr>
           <td>{{ name }}</td>
+          {{#each data}} {{@index}}: {{this.name}} {{/each}}
         </tr>
         {{#each items}}
         <tr>
-          <td>{{ item.name }}</td>
-          <td></td>
-          <td></td>
+          <td>Dom</td>
           <td>6000</td>
         </tr>
         {{/each}}
