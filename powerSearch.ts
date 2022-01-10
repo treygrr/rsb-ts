@@ -43,6 +43,7 @@ const search = async (query: string) => {
   const log = console.log;
 
   await page.goto('https://secure.runescape.com/m=itemdb_rs/c=nqZaOLPp0aE/');
+  // set viewport to fullsize desktop
   await page.screenshot({ path: 'example.png' });
   await page.waitForSelector('#CybotCookiebotDialogBodyButtonDecline'),
   await Promise.all([
@@ -101,7 +102,7 @@ const search = async (query: string) => {
   }
 
   console.log(data)
-  if ( data.items ) {
+  if (data?.items) {
     screenShotResults(browser, data.items);
   }
 };
@@ -175,13 +176,19 @@ const getHandleBarsTemplateCompiled = (items: any): any =>{
 
 const screenShotResults = async (browser: any, dataItems: DataReturn) => {
   const page = await browser.newPage();
+  await page.setViewport({
+    width: 1280,
+    height: 800,
+  });
   const build = {
     name: 'trey',
     items: { ...dataItems }
   }
-  await page.setContent(getHandleBarsTemplateCompiled({ name: 'Trey', data: build.items }));
-  const table = await page.$('table');
-  await table?.screenshot({ path: 'table.png' });
+  await page.setContent(getHandleBarsTemplateCompiled({ data: build.items }));
+  const table = await page.$('body > div > div > table');
+  console.log('We are after table');
+  await table.screenshot({ path: 'choiceResult.png' });
+  await page.close();
 }
 
 search('dragon sword');
