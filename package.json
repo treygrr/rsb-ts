@@ -10,7 +10,7 @@
     "start": "node --loader ts-node/esm/transpile-only src/main.ts",
     "dev": "nodemon --exec node --loader ts-node/esm/transpile-only src/main.ts",
     "updateItems": "node --loader ts-node/esm/transpile-only items.ts",
-    "power": "nodemon --exec node --loader ts-node/esm/transpile-only powerSearch.ts"
+    "power": "nodemon --exec node --loader ts-node/esm/transpile-only src/api/PowerSearch/PowerSearch.ts"
   },
   "keywords": [],
   "author": "",
