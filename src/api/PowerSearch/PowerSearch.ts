@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import puppeteerCore from 'puppeteer-core'
 import * as cheerio from 'cheerio';
 import Handlebars from 'handlebars';
 import fs from 'fs';
@@ -26,9 +27,10 @@ interface DataReturn {
   errorMessages: string[],
   pageData?: PageData,
 }
+let searchTerm: string = '';
 
 const search = async (query: string) => {
-
+  searchTerm = query;
   const data: DataReturn = {
     items: [],
     errors: false,
@@ -38,87 +40,90 @@ const search = async (query: string) => {
       totalPageNumber: 0,
     }
   }
+  let browser;
+  console.log('System is running on: ',process.arch);
+  if (process.arch === 'arm64') {
+    browser = await puppeteerCore.launch({ args: ['--start-maximized'], defaultViewport: null, executablePath: '/usr/bin/chromium-browser' });
 
-  const browser = await puppeteer.launch({ headless: false, args: ['--start-maximized'], defaultViewport: null});
-  const page = await browser.newPage();
-  const log = console.log;
+  } else {
+    browser = await puppeteer.launch({ args: ['--start-maximized', '--no-sandbox'], defaultViewport: null });
+  }
+  try {
+    const page = await browser.newPage();
+    const log = console.log;
 
-  await page.goto('https://secure.runescape.com/m=itemdb_rs/c=nqZaOLPp0aE/');
-  // set viewport to fullsize desktop
-  await page.screenshot({ path: 'example.png' });
-  await page.waitForSelector('#CybotCookiebotDialogBodyButtonDecline'),
-  await Promise.all([
-    page.click('#CybotCookiebotDialogBodyButtonDecline')
-  ]);
+    await page.goto('https://secure.runescape.com/m=itemdb_rs/c=nqZaOLPp0aE/');
+    // set viewport to fullsize desktop
+    await page.screenshot({ path: 'example.png' });
+    await page.waitForSelector('#CybotCookiebotDialogBodyButtonDecline'),
+    await Promise.all([
+      page.click('#CybotCookiebotDialogBodyButtonDecline')
+    ]);
 
-  deleteCookie(page);
-  await page.waitForSelector('input[name=query]');
-  await page.$eval('input[name=query]', (el: any, query: any): void => {
-    return el.value = query.toLowerCase()
-  }, query);
-  await page.click('input.search-submit');
-  await page.waitForNetworkIdle();
-  const divCount = await doesSelectorExist(page, 'tbody');
+    deleteCookie(page);
+    await page.waitForSelector('input[name=query]');
+    await page.$eval('input[name=query]', (el: any, query: any): void => {
+      return el.value = query.toLowerCase()
+    }, query);
+    await page.click('input.search-submit');
+    await page.waitForNetworkIdle();
+    const divCount = await doesSelectorExist(page, 'tbody');
 
-  // const itemCountElement = await page.$('#grandexchange > div > div.contents > main > div.content.roughTop > form > p');
-  // const itemCount = await page.evaluate(el => el.innerText, itemCountElement);
-  // console.log('itemCount: ', itemCount);
-  // if (itemCount !== '') {
-  //   const itemCountValue = parseInt(itemCount.split('of ')[1].split(' ')[0]);
-  //   if (itemCountValue > 25) {
-  //     data.errors = true;
-  //     data.errorMessages.push('Too many results, please narrow your search');
-  //     return
-  //   }
-  // }
+    if (!divCount) {
+      data.errors = true;
+      data.errorMessages.push('No results found');
+      console.log('No results found ... returning data and exiting session!');
+      // await browser.close();
+      return data;
+    };
+    
+    // check if there are multeple pages
+      const pageData = await getPageData(page);
+      data.pageData = pageData;
 
-  if (!divCount) {
+    // for each page get data
+    for (let i = data?.pageData?.currentPage || 1; i <= (data?.pageData?.totalPageNumber || 1); i++) {
+      // get data
+      const trs = await getTableData(page);
+
+      data.items?.push(...trs);
+      // get pageData
+      if (data?.pageData?.currentPage) {
+        data.pageData.currentPage = i;
+      }
+      // if i = total page number break
+      if (i === data?.pageData?.totalPageNumber) {
+        break;
+      }
+      await goToNextPage(page, i + 1);
+      // go to next page
+    }
+
+    // check for matches
+    data.matchedResults = checkForMatches(query, data?.items ?? []);
+    if (data.matchedResults?.length >= 1) {
+      if (data.matchedResults.length === 1) {
+        await screenShotResults(browser, data.matchedResults)
+        data.exactMatch = data.matchedResults[0];
+        console.log('Exact match found!', data.exactMatch.name);
+        return data;
+      }
+      // await browser.close();
+      await screenShotResults(browser, data.matchedResults)
+      return data;
+    }
+
+    if (data.matchedResults?.length === 0 && data?.items?.length) {
+      await screenShotResults(browser, data?.items);
+      console.log('No exact match found, but results found!', data.items.length);
+      await browser.close();
+      return data;
+    }
+  } catch (er: any) {
     data.errors = true;
-    data.errorMessages.push('No results found');
-    console.log('No results found ... returning data and exiting session!');
-    // await browser.close();
-    return data;
-  };
-  
-  // check if there are multeple pages
-    const pageData = await getPageData(page);
-    data.pageData = pageData;
-
-  // for each page get data
-  for (let i = data?.pageData?.currentPage || 1; i <= (data?.pageData?.totalPageNumber || 1); i++) {
-    // get data
-    const trs = await getTableData(page);
-
-    data.items?.push(...trs);
-    // get pageData
-    if (data?.pageData?.currentPage) {
-      data.pageData.currentPage = i;
-    }
-    // if i = total page number break
-    if (i === data?.pageData?.totalPageNumber) {
-      break;
-    }
-    await goToNextPage(page, i + 1);
-    // go to next page
-  }
-
-  // check for matches
-  data.matchedResults = checkForMatches(query, data?.items ?? []);
-  if (data.matchedResults?.length >= 1) {
-    if (data.matchedResults.length === 1) {
-      data.exactMatch = data.matchedResults[0];
-      console.log('Exact match found!', data.exactMatch.name);
-      return
-    }
-    // await browser.close();
-    await screenShotResults(browser, data.matchedResults)
-    return data;
-  }
-
-  if (data.matchedResults?.length === 0 && data?.items?.length) {
-    await screenShotResults(browser, data?.items);
-    console.log('No exact match found, but results found!', data.items.length);
-    // await browser.close();
+    console.log(er);
+    data.errorMessages.push('Something happened on the backend');
+    data.errorMessages.push(er.toString());
     return data;
   }
 };
@@ -186,7 +191,6 @@ const checkForMatches = (query: string, item: any): ItemData[] => {
   const match = item.filter((item: any) => {
     return item.name.toLowerCase() === query.toLowerCase();
   });
-  console.log(match)
   return match;
 }
 
@@ -221,7 +225,8 @@ const screenShotResults = async (browser: any, dataItems: any) => {
   const table = await page.$('body > div > div > table');
   // get height and width of element
   const { height, width } = await table.boundingBox();
-  await page.screenshot({'path': 'choiceResult.png', 'clip': {'x': 0, 'y': 0, 'width': width, 'height': height } });  
+  console.log('Saved a screenshot titled: ' + searchTerm + '.png');
+  await page.screenshot({'path': `./src/itemDataBase/screenshots/${searchTerm}.png`, 'clip': {'x': 0, 'y': 0, 'width': width, 'height': height } });  
 }
 
 export { search };
