@@ -41,7 +41,13 @@ class buttonExample {
     this.itemName = itemName;
 
     const itemData = await search(itemName);
-    console.log(itemData)
+
+    const attachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'itemSearch.png');
+
+    if (!itemData) {
+      await interaction.editReply('I could not find data for some reason. 🥴');
+    } 
+
     if (itemData?.errors) {
       await interaction.editReply(itemData.errorMessages.join('\n'));
       return
@@ -53,8 +59,8 @@ class buttonExample {
     }
 
     if (itemData?.matchedResults?.length === 1) {
-      await interaction.editReply('Found one matching Item');
-      return
+      await this.replyWithExactMatch(interaction, attachment)
+      return;
     }
 
     if (itemData?.matchedResults?.length < 25) {
