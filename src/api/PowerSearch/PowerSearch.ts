@@ -54,7 +54,6 @@ const search = async (query: string) => {
 
     await page.goto('https://secure.runescape.com/m=itemdb_rs/c=nqZaOLPp0aE/');
     // set viewport to fullsize desktop
-    await page.screenshot({ path: 'example.png' });
     await page.waitForSelector('#CybotCookiebotDialogBodyButtonDecline'),
     await Promise.all([
       page.click('#CybotCookiebotDialogBodyButtonDecline')
@@ -226,7 +225,7 @@ const screenShotResults = async (browser: any, dataItems: any) => {
   // get height and width of element
   const { height, width } = await table.boundingBox();
   console.log('Saved a screenshot titled: ' + searchTerm + '.png');
-  await page.screenshot({'path': `./src/itemDataBase/screenshots/${searchTerm}.png`, 'clip': {'x': 0, 'y': 0, 'width': width, 'height': height } });  
+  await page.screenshot({'path': `./${searchTerm}.png`, 'clip': {'x': 0, 'y': 0, 'width': width, 'height': height } });  
 }
 
 export { search };

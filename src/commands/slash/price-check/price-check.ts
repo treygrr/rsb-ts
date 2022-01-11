@@ -47,7 +47,6 @@ class buttonExample {
       return
     }
 
-    const attachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, `itemResult.png`);
 
     if (!itemData?.items?.length && !itemData?.exactMatch && !itemData?.matchedResults?.length) {
       console.log('this here is the data if nothing is found', itemData);
@@ -59,27 +58,31 @@ class buttonExample {
       const itemValue = menuInteraction?.values?.[0];
 
       if (itemData.matchedResults.length <= 25) {
+        const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
         await this.replyWithDropdown(itemData.matchedResults, interaction, attachment);
         return
       }
 
       if (itemData.matchedResults.length > 25) {
+        const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
         await this.replyWithoutDropdown(itemData.matchedResults, interaction, attachment);
       }
     }
 
     if (itemData?.items?.length && !itemData?.exactMatch && !itemData?.matchedResults?.length) {
       if (itemData.items.length <= 25) {
+        const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
         await this.replyWithDropdown(itemData.items, interaction, attachment);
         return
       }
 
       if (itemData.items.length > 25) {
+        const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
         await this.replyWithoutDropdown(itemData.items, interaction, attachment);
         return
       }
     }
-
+    const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
     await this.replyWithExactMatch(interaction, attachment);
     
     setTimeout(function () {
@@ -93,7 +96,7 @@ class buttonExample {
     const embed = new MessageEmbed()
       .setTitle(`${itemData.length} results found for ${this.itemName}`)
       .setDescription('Select an ID and I will show you the items price Info!')
-      .setImage('attachment://itemResult.png');
+      .setImage(`attachment://${this.itemName}.png`);
 
     itemData.forEach(async (item: { name: any; id: any; }) => {
       this.selections.push(
@@ -117,7 +120,7 @@ class buttonExample {
     const embed = new MessageEmbed()
       .setTitle(`${itemData.length} results found for ${this.itemName}`)
       .setDescription('Discord limits how many options can be in a drop down.\nBecause this has more than 25 you have to\ndo /price-check again but instead of a name, use the ID from the image!')
-      .setImage('attachment://itemResult.png');
+      .setImage(`attachment://${this.itemName}.png`);
     const selections: any[] = [];
     itemData.forEach(async (item) => {
       selections.push(
@@ -135,7 +138,7 @@ class buttonExample {
     const embed = new MessageEmbed()
       .setTitle(`We found your item!`)
       .setDescription('Hang tight and we will grab even more info!')
-      .setImage(`attachment://itemResult.png`);
+      .setImage(`attachment://${this.itemName}.png`);
 
     await interaction.editReply({ embeds: [embed], files: [attachment] });
   }
