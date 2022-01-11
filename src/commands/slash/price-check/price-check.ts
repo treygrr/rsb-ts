@@ -41,49 +41,30 @@ class buttonExample {
     this.itemName = itemName;
 
     const itemData = await search(itemName);
-
+    console.log(itemData)
     if (itemData?.errors) {
       await interaction.editReply(itemData.errorMessages.join('\n'));
       return
     }
 
+    if (!itemData?.matchedResults || !itemData.matchedResults.length) {
+      await interaction.editReply('Nothing found matching your search criteria. 😬')
+      return;
+    }
 
-    if (!itemData?.items?.length && !itemData?.exactMatch && !itemData?.matchedResults?.length) {
-      console.log('this here is the data if nothing is found', itemData);
-      await interaction.editReply("No item found matching your search criteria 😬");
+    if (itemData?.matchedResults?.length === 1) {
+      await interaction.editReply('Found one matching Item');
       return
     }
 
-    if (!itemData?.exactMatch && itemData?.matchedResults?.length) {
-      const itemValue = menuInteraction?.values?.[0];
-
-      if (itemData.matchedResults.length <= 25) {
-        const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
-        await this.replyWithDropdown(itemData.matchedResults, interaction, attachment);
-        return
-      }
-
-      if (itemData.matchedResults.length > 25) {
-        const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
-        await this.replyWithoutDropdown(itemData.matchedResults, interaction, attachment);
-      }
+    if (itemData?.matchedResults?.length < 25) {
+      await interaction.editReply('Found less than 25 results');
+      return
     }
 
-    if (itemData?.items?.length && !itemData?.exactMatch && !itemData?.matchedResults?.length) {
-      if (itemData.items.length <= 25) {
-        const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
-        await this.replyWithDropdown(itemData.items, interaction, attachment);
-        return
-      }
-
-      if (itemData.items.length > 25) {
-        const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
-        await this.replyWithoutDropdown(itemData.items, interaction, attachment);
-        return
-      }
+    if (itemData?.matchedResults?.length > 25) {
+      await interaction.editReply('Found more than 25 results');
     }
-    const attachment = new MessageAttachment(`./${this.itemName}.png`, `${this.itemName}.png`);
-    await this.replyWithExactMatch(interaction, attachment);
     
     setTimeout(function () {
       interaction.deleteReply();
@@ -93,34 +74,14 @@ class buttonExample {
   }
 
   async replyWithDropdown(itemData: { name: any; id: any; }[], interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
-    const embed = new MessageEmbed()
-      .setTitle(`${itemData.length} results found for ${this.itemName}`)
-      .setDescription('Select an ID and I will show you the items price Info!')
-      .setImage(`attachment://${this.itemName}.png`);
-
-    itemData.forEach(async (item: { name: any; id: any; }) => {
-      this.selections.push(
-        {
-          label: `${item.name} - ${item.id}`,
-          value: item.id
-        }
-      )
-    });
-
-    const menu = new MessageSelectMenu()
-      .addOptions(this.selections)
-      .setCustomId("item-menu");
-
-    const buttonRow = new MessageActionRow().addComponents(menu);
-
-    await interaction.editReply({ embeds: [embed], files: [attachment], components: [buttonRow] });
+    
   }
 
   async replyWithoutDropdown(itemData: { name: any; id: any; }[], interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
     const embed = new MessageEmbed()
       .setTitle(`${itemData.length} results found for ${this.itemName}`)
       .setDescription('Discord limits how many options can be in a drop down.\nBecause this has more than 25 you have to\ndo /price-check again but instead of a name, use the ID from the image!')
-      .setImage(`attachment://${this.itemName}.png`);
+      .setImage(`attachment://itemSearch.png`);
     const selections: any[] = [];
     itemData.forEach(async (item) => {
       selections.push(
@@ -138,7 +99,7 @@ class buttonExample {
     const embed = new MessageEmbed()
       .setTitle(`We found your item!`)
       .setDescription('Hang tight and we will grab even more info!')
-      .setImage(`attachment://${this.itemName}.png`);
+      .setImage(`attachment://itemSearch.png`);
 
     await interaction.editReply({ embeds: [embed], files: [attachment] });
   }

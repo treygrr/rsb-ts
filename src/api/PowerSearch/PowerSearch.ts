@@ -20,9 +20,7 @@ interface PageData {
 }
 
 interface DataReturn {
-  items?: ItemData[],
-  exactMatch?: ItemData,
-  matchedResults?: ItemData[],
+  matchedResults: ItemData[],
   errors?: Boolean,
   errorMessages: string[],
   pageData?: PageData,
@@ -32,7 +30,7 @@ let searchTerm: string = '';
 const search = async (query: string) => {
   searchTerm = query;
   const data: DataReturn = {
-    items: [],
+    matchedResults: [],
     errors: false,
     errorMessages: [],
     pageData: {
@@ -41,7 +39,7 @@ const search = async (query: string) => {
     }
   }
   let browser;
-  console.log('System is running on: ',process.arch);
+  console.log('Search Query:', query);
   if (process.arch === 'arm64') {
     browser = await puppeteerCore.launch({ args: ['--start-maximized'], defaultViewport: null, executablePath: '/usr/bin/chromium-browser' });
 
@@ -77,34 +75,36 @@ const search = async (query: string) => {
     };
     
     // check if there are multeple pages
-      const pageData = await getPageData(page);
-      data.pageData = pageData;
-
+    data.pageData = await getPageData(page);
+    
     // for each page get data
     for (let i = data?.pageData?.currentPage || 1; i <= (data?.pageData?.totalPageNumber || 1); i++) {
       // get data
-      const trs = await getTableData(page);
+      const trs: ItemData[] = await getTableData(page);
 
-      data.items?.push(...trs);
+      data.matchedResults.push(...trs);
       // get pageData
       if (data?.pageData?.currentPage) {
         data.pageData.currentPage = i;
       }
+      console.log('trs here', trs);
+      console.log('data.matchresults', data.matchedResults)
       // if i = total page number break
       if (i === data?.pageData?.totalPageNumber) {
         break;
       }
       await goToNextPage(page, i + 1);
       // go to next page
+      
     }
 
     // check for matches
-    data.matchedResults = checkForMatches(query, data?.items ?? []);
+    data.matchedResults = checkForMatches(query, data?.matchedResults ?? []);
+    console.log('after match results', data.matchedResults)
     if (data.matchedResults?.length >= 1) {
       if (data.matchedResults.length === 1) {
         await screenShotResults(browser, data.matchedResults)
-        data.exactMatch = data.matchedResults[0];
-        console.log('Exact match found!', data.exactMatch.name);
+        data.matchedResults = data.matchedResults;
         return data;
       }
       // await browser.close();
@@ -112,9 +112,9 @@ const search = async (query: string) => {
       return data;
     }
 
-    if (data.matchedResults?.length === 0 && data?.items?.length) {
-      await screenShotResults(browser, data?.items);
-      console.log('No exact match found, but results found!', data.items.length);
+    if (data.matchedResults?.length === 0 && data?.matchedResults?.length) {
+      await screenShotResults(browser, data?.matchedResults);
+      console.log('No exact match found, but results found!', data.matchedResults.length);
       await browser.close();
       return data;
     }
@@ -155,19 +155,19 @@ const getPageData = async function (page: any) {
   return trs;
 };
 
-const getTableData = async (page: any) => {
-  const trs = await page.evaluate(async () => {
-    let data: any[] = [];
+const getTableData = async (page: any):Promise<ItemData[]> => {
+  const trs: ItemData[] = await page.evaluate(async () => {
+    let data: ItemData[] = [];
     const elements = document.querySelectorAll('tbody > tr');
     for (let i = 0; i < elements.length; i++) {
       const child = Array.from(elements[i].children);
-      const item = {
-        image: child[0].querySelector('img')?.getAttribute('src'),
-        name: child[0].querySelector('img')?.getAttribute('title'),
-        id: child[0].querySelector('img')?.getAttribute('src')?.split('id=')[1],
-        members: child[1].innerHTML.length ? true : false,
-        price: child[2].querySelector('a')?.innerText,
-        change: child[3].querySelector('a')?.innerText,
+      const item: ItemData = {
+        image: child[0]?.querySelector('img')?.getAttribute('src') ?? '',
+        name: child[0]?.querySelector('img')?.getAttribute('title') ?? '',
+        id: child[0]?.querySelector('img')?.getAttribute('src')?.split('id=')[1] ?? '',
+        members: child[1]?.innerHTML.length ? true : false,
+        price: child[2]?.querySelector('a')?.innerText ?? '',
+        change: child[3]?.querySelector('a')?.innerText ?? '',
       }
       data.push(item);
     }
@@ -190,6 +190,10 @@ const checkForMatches = (query: string, item: any): ItemData[] => {
   const match = item.filter((item: any) => {
     return item.name.toLowerCase() === query.toLowerCase();
   });
+  if (!match.length) {
+    console.log('No matches was found.')
+    return item;
+  }
   return match;
 }
 
@@ -225,7 +229,7 @@ const screenShotResults = async (browser: any, dataItems: any) => {
   // get height and width of element
   const { height, width } = await table.boundingBox();
   console.log('Saved a screenshot titled: ' + searchTerm + '.png');
-  await page.screenshot({'path': `./${searchTerm}.png`, 'clip': {'x': 0, 'y': 0, 'width': width, 'height': height } });  
+  await page.screenshot({'path': `./itemSearch.png`, 'clip': {'x': 0, 'y': 0, 'width': width, 'height': height } });  
 }
 
 export { search };
