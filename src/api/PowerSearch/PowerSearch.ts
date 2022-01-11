@@ -60,6 +60,18 @@ const search = async (query: string) => {
   await page.waitForNetworkIdle();
   const divCount = await doesSelectorExist(page, 'tbody');
 
+  // const itemCountElement = await page.$('#grandexchange > div > div.contents > main > div.content.roughTop > form > p');
+  // const itemCount = await page.evaluate(el => el.innerText, itemCountElement);
+  // console.log('itemCount: ', itemCount);
+  // if (itemCount !== '') {
+  //   const itemCountValue = parseInt(itemCount.split('of ')[1].split(' ')[0]);
+  //   if (itemCountValue > 25) {
+  //     data.errors = true;
+  //     data.errorMessages.push('Too many results, please narrow your search');
+  //     return
+  //   }
+  // }
+
   if (!divCount) {
     data.errors = true;
     data.errorMessages.push('No results found');
@@ -68,9 +80,6 @@ const search = async (query: string) => {
     return data;
   };
   
-  const table = await page.$('#grandexchange > div > div.contents > main > div.content.roughTop > table > tbody');
-  table?.screenshot({ path: 'table.png' });
-
   // check if there are multeple pages
     const pageData = await getPageData(page);
     data.pageData = pageData;
@@ -95,15 +104,19 @@ const search = async (query: string) => {
 
   // check for matches
   data.matchedResults = checkForMatches(query, data?.items ?? []);
-  if (data.matchedResults?.length === 1) {
-    data.exactMatch = data.matchedResults[0];
-    console.log('Exact match found!', data.exactMatch.name);
+  if (data.matchedResults?.length >= 1) {
+    if (data.matchedResults.length === 1) {
+      data.exactMatch = data.matchedResults[0];
+      console.log('Exact match found!', data.exactMatch.name);
+      return
+    }
     // await browser.close();
+    await screenShotResults(browser, data.matchedResults)
     return data;
   }
 
   if (data.matchedResults?.length === 0 && data?.items?.length) {
-    screenShotResults(browser, data?.items);
+    await screenShotResults(browser, data?.items);
     console.log('No exact match found, but results found!', data.items.length);
     // await browser.close();
     return data;
@@ -111,7 +124,6 @@ const search = async (query: string) => {
 };
 
 const goToNextPage =  async (page: any, pageNumber: number) => {
-  console.log('tring to go to page: ', pageNumber);
   await page.waitForNetworkIdle();
   await page.waitForTimeout(1000);
   const position = await page.$$eval('#grandexchange > div > div.contents > main > div.content.roughTop > div > div > div > ul > li', (el: any, pageNumber: number) => {
@@ -121,9 +133,7 @@ const goToNextPage =  async (page: any, pageNumber: number) => {
     });
     return stuff;
   }, pageNumber);
-  console.log('position', position);
   const truePostition = parseInt(position.findIndex((e: any) => parseInt(e) === pageNumber));
-  console.log('truePostition: ', truePostition);
   await page.click(`#grandexchange > div > div.contents > main > div.content.roughTop > div > div > div > ul > li:nth-child(${truePostition + 1})`);
   await page.waitForNetworkIdle();
 }
@@ -176,8 +186,10 @@ const checkForMatches = (query: string, item: any): ItemData[] => {
   const match = item.filter((item: any) => {
     return item.name.toLowerCase() === query.toLowerCase();
   });
+  console.log(match)
   return match;
 }
+
 
 
 const getHandleBarsTemplateFile = (): string => {
@@ -185,6 +197,16 @@ const getHandleBarsTemplateFile = (): string => {
 }
 
 const getHandleBarsTemplateCompiled = (items: any): any =>{
+  Handlebars.registerHelper("isUp", function(value: string) {
+    // if first letter in string is + then return green
+    if (value.charAt(0) === '+') {
+      return 'green';
+    }
+    if (value.charAt(0) === '-') {
+      return 'red';
+    }
+    return 'black';
+  });
   return Handlebars.compile(getHandleBarsTemplateFile())(items);
 }
 
@@ -200,7 +222,6 @@ const screenShotResults = async (browser: any, dataItems: any) => {
   // get height and width of element
   const { height, width } = await table.boundingBox();
   await page.screenshot({'path': 'choiceResult.png', 'clip': {'x': 0, 'y': 0, 'width': width, 'height': height } });  
-  page.close();
 }
 
 export { search };

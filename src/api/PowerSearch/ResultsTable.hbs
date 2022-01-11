@@ -6,6 +6,15 @@
       margin: 0;
       background-color: transparent;
     }
+    .bold {
+      font-weight: bold;
+    }
+    .green {
+      color: green;
+    }
+    .red {
+      color: red;
+    }
     div {
       min-width: 400px;
       max-width: 750px;
@@ -74,7 +83,11 @@
             <td>{{this.id}}</td>
             <td>{{this.members}}</td>
             <td>{{this.price}}</td>
-            <td>{{this.change}}</td>
+            <td>
+              <span class="bold {{isUp this.change}}">
+              {{this.change}}
+              <span>
+            </td>
           </tr>
           {{/each}}
         </tbody>
