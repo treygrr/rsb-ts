@@ -108,7 +108,13 @@ class buttonExample {
       .setCustomId("item-menu");
 
     const buttonRow = new MessageActionRow().addComponents(menu);
-    await interaction.editReply({ embeds: [embed], files: [attachment], components: [buttonRow] });
+    try {
+      await interaction.editReply({ embeds: [embed], files: [attachment], components: [buttonRow] });
+    }
+    catch(er) {
+      embed.setDescription('Something went wrong when setting up the dropdown.\nUse /price-check again but instead of a name, use the ID from the image!');
+      await interaction.editReply({ embeds: [embed], files: [attachment] });
+    }
   }
 
   async replyWithoutDropdown(itemData: { name: any; id: any; }[], interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
