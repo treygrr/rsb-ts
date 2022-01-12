@@ -130,12 +130,16 @@ class buttonExample {
     await interaction.editReply({ embeds: [embed], files: [attachment] });
   }
   
-  async getSingleItem(itemId: string, interaction: CommandInteraction<CacheType>) {
+  async getSingleItem(itemId: string, interaction: CommandInteraction<CacheType> | SelectMenuInteraction) {
     await interaction.followUp({ content: 'Fetching data for you now...' });
     const searchById = await new SearchById(itemId).getItemData();
     await interaction.followUp(`${itemId} - Looking for it`);
-    console.log(searchById);
-    await interaction.followUp(searchById.toString());
+    if (searchById.item) {
+      console.log(searchById.item);
+      await interaction.followUp(hbs.getHandleBarsTemplateCompiled({ single: true, data: {...searchById.item} }));
+      return;
+    }
+    await interaction.followUp('Welp looks like something broke. 😬');
   }
 
 
@@ -150,16 +154,9 @@ class buttonExample {
     if (!itemValue || itemValue === undefined || itemValue === null || itemValue === '' || itemValue === 'undefined') {
       return await interaction.followUp("Invalid Item ID, select again 👹");
     }
+    const itemId = this.selections.find((r) => r.value === itemValue)?.value;
 
-    await interaction.followUp( {content: 
-      `You selected: ${this.selections.find((r) => r.value === itemValue)?.label
-      }\n Give me one second and I'll fetch that for you.` }
-    );
-
-    await interaction.followUp(
-      `You selected: ${this.selections.find((r) => r.value === itemValue)?.label
-      }\n Give me one second and I'll fetch that for you.`
-    );
+    this.getSingleItem(itemId, interaction)
     return;
   }
 }
