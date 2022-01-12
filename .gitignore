@@ -1,5 +1,5 @@
 /node_modules
 .env
 .yarn-error.log
-/src/itemDataBase/items
-/src/itemDataBase/screenshots
+/src/itemDataBase/items/*.json
+/src/itemDataBase/screenshots/*.png
