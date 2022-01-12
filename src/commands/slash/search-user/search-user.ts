@@ -9,8 +9,10 @@ import {
 import { ButtonComponent, Discord, Slash, SlashOption } from "discordx";
 import { UserData } from '../../../api/UserData.js';
 import { Hbs } from '../../../api/HBars.js';
+import path from 'path';
+import { fileURLToPath } from "url";
 
-const hbs = new Hbs(import.meta.url);
+const hbs = new Hbs(fileURLToPath(import.meta.url));
 
 @Discord()
 class buttonExample {

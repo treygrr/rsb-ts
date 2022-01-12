@@ -31,7 +31,7 @@ export class Hbs {
     this.fileName = this.getFileName();
     this.folderPath = this.getFolderPath();
     this.setHandleBarHelpers();
-
+    console.log('this is the path', this.path)
   }
 
   setHandleBarHelpers() {
@@ -48,22 +48,22 @@ export class Hbs {
   }
 
   getFileName(): string {
+    // get the full path to the current file
     this.fileName = this.path.split('.')[0];
-    this.fileName = this.fileName.split('/')[this.fileName.split('/').length - 1];
+    this.fileName = this.fileName.split(path.sep)[this.fileName.split(path.sep).length - 1];
     return this.fileName;
   }
 
   getFolderPath(): string {
     // get folder path current file is in for windows or linx
-    console.log(path.dirname(fileURLToPath(import.meta.url)));
-    const fPath = this.path.split('/');
-    fPath.pop();
-    // remove first three indexes from array
-    fPath.splice(0, 3);
-    return fPath.join('/');
+    const pathy = this.path.split('.')[0];
+    const pathy2 = pathy.split(path.sep);
+    const pathy3 = pathy2.pop();
+    const pathy4 = pathy2.join(path.sep);
+    return pathy4
   }
 
-  getHandleBarsTemplateFile(): string {
+  getHandleBarsTemplateFile(): string | null {
     return fs.readFileSync(this.getFolderPath() + `/${this.getFileName()}.hbs`, 'utf8');
   }
 

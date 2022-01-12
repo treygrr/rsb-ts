@@ -3,6 +3,9 @@ import { Intents, Interaction, Message } from "discord.js";
 import { Client } from "discordx";
 import { dirname, importx } from "@discordx/importer";
 import dotenv from 'dotenv';
+
+// set a global variable for the root directory
+
 dotenv.config();
 const client = new Client({
   simpleCommand: {
