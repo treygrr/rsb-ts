@@ -42,10 +42,6 @@ class buttonExample {
       content: hbs.getHandleBarsTemplateCompiled({ basic: true, ...userData }),
       components: [row],
     });
-
-    setTimeout(function() {
-      interaction.deleteReply();
-    }, 60000);
   }
 
   @ButtonComponent("skills-btn")
@@ -54,7 +50,7 @@ class buttonExample {
     if (!this.username) {
       return interaction.reply('This button does not work anymore.😢');
     }
-    interaction.deferReply({ephemeral: true});
+    interaction.deferReply();
     const userData = await new UserData(this.username).getUserData();
     interaction.editReply(hbs.getHandleBarsTemplateCompiled({ showSkills: true, ...userData}));
   }

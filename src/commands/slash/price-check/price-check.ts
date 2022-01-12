@@ -15,88 +15,108 @@ import { UserData } from '../../../api/UserData.js';
 import { Hbs } from '../../../api/HBars.js';
 import { search } from '../../../api/PowerSearch/PowerSearch.js';
 import { Stream } from "stream";
+import { SearchById } from "../../../api/PowerSearch/SearchById.js";
 
 const hbs = new Hbs(import.meta.url);
+;
 
 @Discord()
 class buttonExample {
   id!: string;
   itemName!: string;
+  itemId!: number;
   selections: any[] = [];
-
   @Slash("price-check")
   async priceCheck(
-    @SlashOption("item-name", { type: "STRING", description: "The item name to search" })
+    @SlashOption("name", { type: "STRING", description: "The item name to search", required: false })
+    @SlashOption("id", { type: "NUMBER", description: "The item id to search", required: false })
     itemName: string,
+    itemId: string,
     interaction: CommandInteraction,
     menuInteraction: SelectMenuInteraction
   ) {
     await interaction.deferReply();
 
-    if (!itemName) {
-      await interaction.editReply("You need to provide an item name 😬");
+    if (!itemName && !itemId) {
+      await interaction.editReply("You need to provide either an item name or an item id. 😬");
       return
     }
+    if (itemName) {
 
-    this.itemName = itemName;
+      this.itemName = itemName;
 
-    const itemData = await search(itemName);
+      const itemData = await search(itemName);
 
-    const attachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'itemSearch.png');
+      const attachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'itemSearch.png');
 
-    if (!itemData) {
-      await interaction.editReply('I could not find data for some reason. 🥴');
-    } 
+      if (!itemData) {
+        await interaction.editReply('I could not find data for some reason. 🥴');
+      } 
 
-    if (itemData?.errors) {
-      await interaction.editReply(itemData.errorMessages.join('\n'));
-      return
-    }
+      if (itemData?.errors) {
+        await interaction.editReply(itemData.errorMessages.join('\n'));
+        return
+      }
 
-    if (!itemData?.matchedResults || !itemData.matchedResults.length) {
-      await interaction.editReply('Nothing found matching your search criteria. 😬')
+      if (!itemData?.matchedResults || !itemData.matchedResults.length) {
+        await interaction.editReply('Nothing found matching your search criteria. 😬')
+        return;
+      }
+
+      if (itemData?.matchedResults?.length === 1) {
+        await this.replyWithExactMatch(interaction, attachment)
+        this.itemId = parseInt(itemData.matchedResults[0].id);
+        await this.getSingleItem(itemData.matchedResults[0].id, interaction);
+        return;
+      }
+
+      if (itemData?.matchedResults?.length < 25) {
+        await this.replyWithDropdown(itemData.matchedResults, interaction, attachment);
+        return
+      }
+
+      if (itemData?.matchedResults?.length > 25) {
+        await this.replyWithoutDropdown(itemData.matchedResults, interaction, attachment);
+      }
+
       return;
     }
 
-    if (itemData?.matchedResults?.length === 1) {
-      await this.replyWithExactMatch(interaction, attachment)
-      return;
+    if (itemId) {
+      this.itemId = parseInt(itemId);
+      await this.getSingleItem(itemId, interaction);
     }
-
-    if (itemData?.matchedResults?.length < 25) {
-      await interaction.editReply('Found less than 25 results');
-      return
-    }
-
-    if (itemData?.matchedResults?.length > 25) {
-      await interaction.editReply('Found more than 25 results');
-    }
-    
-    setTimeout(function () {
-      interaction.deleteReply();
-    }, 60000);
-
-    return;
   }
 
   async replyWithDropdown(itemData: { name: any; id: any; }[], interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
-    
-  }
-
-  async replyWithoutDropdown(itemData: { name: any; id: any; }[], interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
     const embed = new MessageEmbed()
-      .setTitle(`${itemData.length} results found for ${this.itemName}`)
-      .setDescription('Discord limits how many options can be in a drop down.\nBecause this has more than 25 you have to\ndo /price-check again but instead of a name, use the ID from the image!')
-      .setImage(`attachment://itemSearch.png`);
+    .setTitle(`${itemData.length} results found for ${this.itemName}`)
+    .setDescription('Select the item you want to see more info about!')
+    .setImage(`attachment://itemSearch.png`);
     const selections: any[] = [];
     itemData.forEach(async (item) => {
-      selections.push(
+      this.selections.push(
         {
           label: `${item.name} - ${item.id}`,
           value: item.id
         }
       )
     });
+
+    const menu = new MessageSelectMenu()
+      .addOptions(this.selections)
+      .setCustomId("item-menu");
+
+    const buttonRow = new MessageActionRow().addComponents(menu);
+    await interaction.editReply({ embeds: [embed], files: [attachment], components: [buttonRow] });
+  }
+
+  async replyWithoutDropdown(itemData: { name: any; id: any; }[], interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
+    const embed = new MessageEmbed()
+      .setTitle(`${itemData.length} results found for ${this.itemName}`)
+      .setDescription('Discord limits how many options can be in a drop down.\nBecause this search has more than 25 results you have to\ndo /price-check again but instead of a name, use the ID from the image!')
+      .setImage(`attachment://itemSearch.png`);
+
     await interaction.editReply({ embeds: [embed], files: [attachment] });
     return
   }
@@ -110,6 +130,13 @@ class buttonExample {
     await interaction.editReply({ embeds: [embed], files: [attachment] });
   }
   
+  async getSingleItem(itemId: string, interaction: CommandInteraction<CacheType>) {
+    await interaction.followUp({ content: 'Fetching data for you now...' });
+    const searchById = await new SearchById(itemId).getItemData();
+    await interaction.followUp(`${itemId} - Looking for it`);
+    console.log(searchById);
+    await interaction.followUp(searchById.toString());
+  }
 
 
   @SelectMenuComponent("item-menu")
@@ -120,9 +147,14 @@ class buttonExample {
     const itemValue = interaction.values?.[0];
 
     // if value not found
-    if (!itemValue) {
-      return await interaction.followUp("invalid role id, select again");
+    if (!itemValue || itemValue === undefined || itemValue === null || itemValue === '' || itemValue === 'undefined') {
+      return await interaction.followUp("Invalid Item ID, select again 👹");
     }
+
+    await interaction.followUp( {content: 
+      `You selected: ${this.selections.find((r) => r.value === itemValue)?.label
+      }\n Give me one second and I'll fetch that for you.` }
+    );
 
     await interaction.followUp(
       `You selected: ${this.selections.find((r) => r.value === itemValue)?.label
