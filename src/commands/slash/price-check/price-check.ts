@@ -26,7 +26,7 @@ class buttonExample {
   itemName!: string;
   itemId!: number;
   selections: any[] = [];
-  @Slash("price-check")
+  @Slash("price-check", { description: "Check the prices of items on the GE by searching for item names or ids." })
   async priceCheck(
     @SlashOption("name", { type: "STRING", description: "The item name to search", required: false })
     @SlashOption("id", { type: "NUMBER", description: "The item id to search", required: false })
@@ -131,9 +131,7 @@ class buttonExample {
   }
   
   async getSingleItem(itemId: string, interaction: CommandInteraction<CacheType> | SelectMenuInteraction) {
-    await interaction.followUp({ content: 'Fetching data for you now...' });
     const searchById = await new SearchById(itemId).getItemData();
-    await interaction.followUp(`${itemId} - Looking for it`);
     if (searchById.item) {
       console.log(searchById.item);
       await interaction.followUp(hbs.getHandleBarsTemplateCompiled({ single: true, data: {...searchById.item} }));

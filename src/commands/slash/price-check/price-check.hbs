@@ -1,17 +1,27 @@
-{{ data }}
-{{ single }}
+
+**name: {{ data.name }}**
 ```
-icon: 'https://secure.runescape.com/m=itemdb_rs/1641812494724_obj_sprite.gif?id=4587',
-icon_large: 'https://secure.runescape.com/m=itemdb_rs/1641812494724_obj_big.gif?id=4587',
-id: 4587,
-type: 'Melee weapons - mid level',
-typeIcon: 'https://www.runescape.com/img/categories/Melee weapons - mid level',
-name: 'Dragon scimitar',
-description: 'A vicious, curved sword.',
-current: { trend: 'neutral', price: '65.8k' },
-today: { trend: 'neutral', price: 0 },
-members: 'true',
-day30: { trend: 'positive', change: '+1.0%' },
-day90: { trend: 'positive', change: '+9.0%' },
-day180: { trend: 'positive', change: '+6.0%' }
+type: {{ data.type }}
+description: {{ data.description }}
+members: {{ members }}
+
+today:
+    trend: {{ data.today.trend }}
+    price: {{ data.today.price }}
+
+current:
+    trend: {{ data.today.trend }}
+    price: {{ data.today.price }}
+
+30 day trend: 
+    trend: {{ data.day30.trend }}
+    change: {{ data.day30.change}}
+
+90 day trend: 
+    trend: {{ data.day90.trend }}
+    change: {{ data.day90.change}}
+    
+180 day trend: 
+    trend: {{ data.day180.trend }}
+    change: {{ data.day180.change}}
 ```

@@ -15,7 +15,7 @@ const hbs = new Hbs(import.meta.url);
 @Discord()
 class buttonExample {
   username!: string;
-  @Slash("search-user")
+  @Slash("search-user", { description: "Search for a user by username." })
   async hello(
     @SlashOption("username", { type: "STRING", description: "The username to search" })
     username: string,
