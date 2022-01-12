@@ -68,6 +68,10 @@ export class Hbs {
   getHandleBarsTemplateCompiled(obj: object): any {
     return this.hbs.compile(this.getHandleBarsTemplateFile())(obj);
   }
+
+  takeScreenshot(path: string, fileName: string) {
+    // take a screenshot of hbs file rendered with puppeteer
+  }
 }
 
 export default { fileURLToPath, Handlebars, path, dirname, fs, getTemplate, getFileName };
