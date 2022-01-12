@@ -54,6 +54,8 @@ export class Hbs {
   }
 
   getFolderPath(): string {
+    // get folder path current file is in for windows or linx
+    console.log(path.dirname(fileURLToPath(import.meta.url)));
     const fPath = this.path.split('/');
     fPath.pop();
     // remove first three indexes from array

@@ -18,7 +18,6 @@ import { Stream } from "stream";
 import { SearchById } from "../../../api/PowerSearch/SearchById.js";
 
 const hbs = new Hbs(import.meta.url);
-;
 
 @Discord()
 class buttonExample {

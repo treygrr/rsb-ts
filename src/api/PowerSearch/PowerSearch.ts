@@ -87,8 +87,6 @@ const search = async (query: string) => {
       if (data?.pageData?.currentPage) {
         data.pageData.currentPage = i;
       }
-      console.log('trs here', trs);
-      console.log('data.matchresults', data.matchedResults)
       // if i = total page number break
       if (i === data?.pageData?.totalPageNumber) {
         break;
