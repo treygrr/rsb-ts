@@ -4,6 +4,8 @@ import * as cheerio from 'cheerio';
 import Handlebars from 'handlebars';
 import fs from 'fs';
 import { listenerCount } from 'process';
+import dotenv from 'dotenv';
+dotenv.config();
 
 interface ItemData {
   image: string,
@@ -27,7 +29,7 @@ interface DataReturn {
 }
 let searchTerm: string = '';
 
-const search = async (query: string) => {
+const search = async (query: string, os = false) => {
   searchTerm = query;
   const data: DataReturn = {
     matchedResults: [],
@@ -44,13 +46,16 @@ const search = async (query: string) => {
     browser = await puppeteerCore.launch({ args: ['--start-maximized'], defaultViewport: null, executablePath: '/usr/bin/chromium-browser' });
 
   } else {
-    browser = await puppeteer.launch({ args: ['--start-maximized', '--no-sandbox'], defaultViewport: null });
+    browser = await puppeteer.launch({headless: process.env.MODE === "development" ? false : true, args: ['--start-maximized', '--no-sandbox'], defaultViewport: null });
   }
   try {
     const page = await browser.newPage();
     const log = console.log;
-
-    await page.goto('https://secure.runescape.com/m=itemdb_rs/c=nqZaOLPp0aE/');
+    if (os) {
+      await page.goto('https://secure.runescape.com/m=itemdb_oldschool/c=HNhleE4TXj4/');
+    } else {
+      await page.goto('https://secure.runescape.com/m=itemdb_rs/c=nqZaOLPp0aE/');
+    }
     // set viewport to fullsize desktop
     await page.waitForSelector('#CybotCookiebotDialogBodyButtonDecline'),
     await Promise.all([
@@ -103,10 +108,11 @@ const search = async (query: string) => {
       if (data.matchedResults.length === 1) {
         await screenShotResults(browser, data.matchedResults)
         data.matchedResults = data.matchedResults;
+        await browser.close();
         return data;
       }
-      // await browser.close();
       await screenShotResults(browser, data.matchedResults)
+      await browser.close();
       return data;
     }
 

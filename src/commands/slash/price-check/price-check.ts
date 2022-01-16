@@ -32,8 +32,10 @@ class buttonExample {
   async priceCheck(
     @SlashOption("name", { type: "STRING", description: "The item name to search", required: false })
     @SlashOption("id", { type: "NUMBER", description: "The item id to search", required: false })
+    @SlashOption("osrs", { type: "BOOLEAN", description: "Search the OSRS GE for items", required: false })
     itemName: string,
     itemId: string,
+    osrs: boolean,
     interaction: CommandInteraction,
     menuInteraction: SelectMenuInteraction
   ) {
@@ -47,7 +49,7 @@ class buttonExample {
 
       this.itemName = itemName;
 
-      const itemData = await search(itemName);
+      const itemData = await search(itemName, osrs ?? false);
 
       const attachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'itemSearch.png');
 
