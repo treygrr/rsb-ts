@@ -1,24 +1,10 @@
-import {
-  CommandInteraction,
-  MessageActionRow,
-  MessageEmbed,
-  MessageAttachment,
-  MessageSelectMenu,
-  SelectMenuInteraction,
-  CacheType,
-  BufferResolvable,
-  FileOptions,
-  HTTPAttachmentData
-} from "discord.js";
+import { CommandInteraction, MessageActionRow, MessageEmbed, MessageAttachment, MessageSelectMenu, SelectMenuInteraction, CacheType } from "discord.js";
 import { ButtonComponent, Discord, SelectMenuComponent, Slash, SlashOption } from "discordx";
-import { UserData } from '../../../api/UserData.js';
 import { Hbs } from '../../../api/HBars.js';
 import { search } from '../../../api/PowerSearch/PowerSearch.js';
-import { Stream } from "stream";
 import { SearchById } from "../../../api/PowerSearch/SearchById.js";
-
-import path from 'path';
 import { fileURLToPath } from "url";
+import { DataReturn, ItemData } from "../../../Interfaces/SearchInterfaces";
 
 const hbs = new Hbs(fileURLToPath(import.meta.url));
 
@@ -29,6 +15,7 @@ class buttonExample {
   osrs = false;
   itemId!: number;
   selections: any[] = [];
+  itemData!: DataReturn;
   @Slash("price-check", { description: "Check the prices of items on the GE by searching for item names or ids." })
   async priceCheck(
     @SlashOption("name", { type: "STRING", description: "The item name to search", required: false })
@@ -136,6 +123,8 @@ class buttonExample {
   }
 
   async replyWithExactMatch(interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
+    const hbs = new Hbs(fileURLToPath(import.meta.url));
+    hbs.getHandleBarsTemplateCompiled
     const moreDataAttachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'data.png');
     const evenMoreData = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'stff.png');
 

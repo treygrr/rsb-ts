@@ -3,7 +3,7 @@ import Handlebars from "handlebars";
 import path from 'path';
 import { dirname, importx } from "@discordx/importer";
 import fs from 'fs';
-
+import puppeteer from 'puppeteer';
 import { skillList } from './runescapeData/skillList.js';
 
 interface hbh {
@@ -15,12 +15,15 @@ export class Hbs {
   public path: string;
   public fileName!: string;
   public folderPath!: string;
+  public puppeteer!: any;
+  data: any;
 
   constructor(path: string) {
     this.path = path;
     this.fileName = this.getFileName();
     this.folderPath = this.getFolderPath();
     this.setHandleBarHelpers();
+    this.puppeteer = puppeteer;
     console.log('this is the path', this.path)
   }
 
@@ -58,12 +61,20 @@ export class Hbs {
     return fs.readFileSync(this.getFolderPath() + `/${this.getFileName()}.hbs`, 'utf8');
   }
 
-  getHandleBarsTemplateCompiled(obj: object, fileName?: string): any {
-    if (fileName) return this.hbs.compile(this.getHandleBarsTemplateFile(fileName))(obj);
-    return this.hbs.compile(this.getHandleBarsTemplateFile())(obj);
+  getHandleBarsTemplateCompiled(fileName?: string): any {
+    if (fileName) return this.hbs.compile(this.getHandleBarsTemplateFile(fileName))(this.data);
+    return this.hbs.compile(this.getHandleBarsTemplateFile())(this.data);
   }
 
-  takeScreenshot(path: string, fileName: string) {
+  private setTemplateData(data: any) {
+    this.data = data;
+  }
+
+  async takeScreenshot(path: string, fileName: string) {
+    const browser = await this.puppeteer.launch({
+      headless: false
+    });
+
     // take a screenshot of hbs file rendered with puppeteer
   }
 }
