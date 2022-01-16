@@ -26,6 +26,7 @@ const hbs = new Hbs(fileURLToPath(import.meta.url));
 class buttonExample {
   id!: string;
   itemName!: string;
+  osrs = false;
   itemId!: number;
   selections: any[] = [];
   @Slash("price-check", { description: "Check the prices of items on the GE by searching for item names or ids." })
@@ -45,6 +46,7 @@ class buttonExample {
       await interaction.editReply("You need to provide either an item name or an item id. 😬");
       return
     }
+    this.osrs = osrs;
     if (itemName) {
 
       this.itemName = itemName;
@@ -141,7 +143,7 @@ class buttonExample {
   }
   
   async getSingleItem(itemId: string, interaction: CommandInteraction<CacheType> | SelectMenuInteraction) {
-    const searchById = await new SearchById(itemId).getItemData();
+    const searchById = await new SearchById(itemId, this.osrs).getItemData();
     if (searchById.item) {
       console.log(searchById.item);
       await interaction.followUp(hbs.getHandleBarsTemplateCompiled({ single: true, data: {...searchById.item} }));

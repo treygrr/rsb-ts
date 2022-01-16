@@ -8,20 +8,22 @@ interface SearchData {
 
 export class SearchById {
     id: string;
+    osrs: boolean;
     searchData: SearchData = {
         data: {},
         errors: false,
         errorMessages: [],
     };
-    constructor(id: string) {
+    constructor(id: string, osrs: boolean) {
         if (!id) {
-            throw new Error('No item id provided');
+            console.log('No item id provided');
         }
+        this.osrs = osrs;
         this.id = id;
     }
     async getItemData() {
         try {
-            const request = await fetch(`https://services.runescape.com/m=itemdb_rs/api/catalogue/detail.json?item=${this.id}`);
+            const request = await fetch(`https://services.runescape.com/m=${this.osrs ? 'itemdb_oldschool' : 'itemdb_rs'}/api/catalogue/detail.json?item=${this.id}`);
             this.searchData.data = await request.json();
             // TODO: save this data to a file if it is a meaningful result
             return this.searchData.data;
