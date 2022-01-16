@@ -124,22 +124,22 @@ class buttonExample {
   }
 
   async replyWithoutDropdown(itemData: { name: any; id: any; }[], interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
+
     const embed = new MessageEmbed()
       .setTitle(`${itemData.length} results found for ${this.itemName}`)
       .setDescription('Discord limits how many options can be in a drop down.\nBecause this search has more than 25 results you have to\ndo /price-check again but instead of a name, use the ID from the image!')
-      .setImage(`attachment://itemSearch.png`);
+      .setImage(`attachment://itemSearch.png`)
+
 
     await interaction.editReply({ embeds: [embed], files: [attachment] });
     return
   }
 
   async replyWithExactMatch(interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
-    const embed = new MessageEmbed()
-      .setTitle(`We found your item!`)
-      .setDescription('Hang tight and we will grab even more info!')
-      .setImage(`attachment://itemSearch.png`);
+    const moreDataAttachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'data.png');
+    const evenMoreData = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'stff.png');
 
-    await interaction.editReply({ embeds: [embed], files: [attachment] });
+    await interaction.editReply({ content: 'LOL here we go.', files: [attachment, moreDataAttachment, evenMoreData] });
   }
   
   async getSingleItem(itemId: string, interaction: CommandInteraction<CacheType> | SelectMenuInteraction) {

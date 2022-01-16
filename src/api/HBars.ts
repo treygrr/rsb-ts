@@ -6,16 +6,6 @@ import fs from 'fs';
 
 import { skillList } from './runescapeData/skillList.js';
 
-
-const getFileName = (fileName: string) => {
-  return path.basename(fileName)?.split('.')[0];
-}
-
-const getTemplate = (path: string, fileName: string) => {
-  const hbs = fs.readFileSync(path + `/${fileName}.hbs`, 'utf8');
-  return Handlebars.compile(hbs.toString());
-}
-
 interface hbh {
   (): any;
 }
@@ -63,11 +53,13 @@ export class Hbs {
     return pathy4
   }
 
-  getHandleBarsTemplateFile(): string | null {
+  getHandleBarsTemplateFile(fileName?: string): string {
+    if (fileName) return fs.readFileSync(this.getFolderPath() + `/${fileName}.hbs`, 'utf8');
     return fs.readFileSync(this.getFolderPath() + `/${this.getFileName()}.hbs`, 'utf8');
   }
 
-  getHandleBarsTemplateCompiled(obj: object): any {
+  getHandleBarsTemplateCompiled(obj: object, fileName?: string): any {
+    if (fileName) return this.hbs.compile(this.getHandleBarsTemplateFile(fileName))(obj);
     return this.hbs.compile(this.getHandleBarsTemplateFile())(obj);
   }
 
@@ -75,5 +67,3 @@ export class Hbs {
     // take a screenshot of hbs file rendered with puppeteer
   }
 }
-
-export default { fileURLToPath, Handlebars, path, dirname, fs, getTemplate, getFileName };
