@@ -36,4 +36,5 @@ jobs:
             cd $DIR1 
             ls -la
             sudo git pull
+            sudo yarn build
             sudo pm2 restart
