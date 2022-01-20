@@ -20,6 +20,6 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           node -v
-          su pi
+          su pi -p ${{ secrets.SSH_PASSWORD }}
           [[ $- == *i* ]] && echo 'Interactive' || echo 'not-interactive'
           shopt -q login_shell && echo 'login' || echo 'not-login'
