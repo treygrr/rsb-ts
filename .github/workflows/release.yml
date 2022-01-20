@@ -20,4 +20,5 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           node -v
-          whoami
+          bash
+          node -v
