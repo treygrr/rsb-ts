@@ -21,3 +21,4 @@ jobs:
         script: |
           cd /home/pi/trey/projects/rsb-ts/ && ls
           git pull
+          ./buildFile.sh
