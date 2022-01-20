@@ -36,6 +36,8 @@ jobs:
             cd $DIR1 
             sudo git pull
             node -v
+            bash
+            node -v
             nvm use 17.3.0
             sudo yarn
             sudo yarn build
