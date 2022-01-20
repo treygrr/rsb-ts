@@ -1,4 +1,4 @@
 #!/bin/bash
 echo $PATH
-echo node -v
+echo "Node version is $(node -v)"
 exit 0
