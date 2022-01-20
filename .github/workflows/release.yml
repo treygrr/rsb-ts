@@ -20,6 +20,6 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           node -v
-          /bin/bash -c "source /home/pi/.bashrc && node -v"
+          /bin/bash -c "source /home/pi/.bashrc && [[ $- == *i* ]] && echo 'Interactive' || echo 'not-interactive'"
           [[ $- == *i* ]] && echo 'Interactive' || echo 'not-interactive'
           shopt -q login_shell && echo 'login' || echo 'not-login'
