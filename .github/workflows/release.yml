@@ -20,4 +20,5 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           node -v
-          bash -c "source /home/pi/.nvm/nvm.sh && nvm use 17.3.0 && node -v"
+          [[ $- == *i* ]] && echo 'Interactive' || echo 'not-interactive'
+          shopt -q login_shell && echo 'login' || echo 'not-login'
