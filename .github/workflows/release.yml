@@ -20,6 +20,6 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           node -v
-          bash -c "source .bashrc && node -v"
+          bash -c "source /home/pi/.bashrc && node -v"
           bash -c "node -v"
           node -v
