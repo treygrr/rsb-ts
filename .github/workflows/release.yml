@@ -34,8 +34,8 @@ jobs:
           connect_timeout: 10s
           script: |
             cd $DIR1 
-            ls -la
             sudo git pull
+            node -v
             sudo yarn
             sudo yarn build
             sudo pm2 restart
