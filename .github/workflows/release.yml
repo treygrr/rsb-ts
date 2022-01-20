@@ -20,5 +20,6 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           node -v
-          bash source .bashrc -c "nvm use 17.3.0 || node -v"
+          bash -c "source .bashrc || node -v"
+          bash -c "node -v"
           node -v
