@@ -21,5 +21,7 @@ jobs:
         script: |
           node -v
           bash -c "source /home/pi/.bashrc && node -v"
+          ls
+          cat .bashrc
           bash -c "node -v"
           node -v
