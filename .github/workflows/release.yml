@@ -1,44 +1,20 @@
-# This is a basic workflow to help you get started with Actions
+name: Node CI
 
-name: Release Restart
-
-# Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the development branch
   push:
-    branches: [ main ]
+    branches: [main]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+
   build:
-    # The type of runner that the job will run on
+    name: Build
     runs-on: ubuntu-latest
-
     steps:
-      - name: checkout
-        uses: actions/checkout@v1
-
-      - name: ssh pipeline 1
-        uses: cross-the-world/ssh-pipeline@master
-        env:
-          DIR1: "/home/pi/trey/projects/rsb-ts"
-        with:
-          host: ${{ secrets.SSH_HOST_NAME }}
-          user: ${{ secrets.SSH_USERNAME}}
-          pass: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
-          connect_timeout: 10s
-          script: |
-            cd $DIR1 
-            sudo git pull
-            node -v
-            bash
-            node -v
-            nvm use 17.3.0
-            sudo yarn
-            sudo yarn build
-            sudo pm2 restart
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST_NAME }}
+        username: ${{ secrets.SSH_USERNAME}}
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: ${{ secrets.SSH_PORT }}
+        script: node -v
