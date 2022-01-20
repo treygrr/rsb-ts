@@ -13,6 +13,7 @@ jobs:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
       with:
+        sync: true
         host: ${{ secrets.SSH_HOST_NAME }}
         username: ${{ secrets.SSH_USERNAME}}
         password: ${{ secrets.SSH_PASSWORD }}
