@@ -20,5 +20,5 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           node -v
-          bash
+          bash -c "node -v"
           node -v
