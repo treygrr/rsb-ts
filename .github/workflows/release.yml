@@ -30,4 +30,4 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       
     - name: Connect to SSH
-      run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST_NAME }}
+      run: ssh staging
