@@ -31,8 +31,8 @@ jobs:
     - name: Pull latest changes
       run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && sudo git pull && exit 0'
 
-      - name: Build the Project
-      run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && yarn build && exit 0'
+    - name: Build the Project
+    run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && yarn build && exit 0'
 
-      - name: Restart the Service
-      run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && pm2 restart all && exit 0'
+    - name: Restart the Service
+    run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && pm2 restart all && exit 0'
