@@ -1,9 +1,7 @@
 import puppeteer from 'puppeteer';
 import puppeteerCore from 'puppeteer-core'
-import * as cheerio from 'cheerio';
 import Handlebars from 'handlebars';
 import fs from 'fs';
-import { listenerCount } from 'process';
 import dotenv from 'dotenv';
 dotenv.config();
 
