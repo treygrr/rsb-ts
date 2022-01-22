@@ -22,3 +22,4 @@ jobs:
           cd /home/pi/trey/projects/rsb-ts/ && ls
           sudo git pull
           sudo ./buildFile.sh
+          sudo su pi /bin/bash -c "./buildFile.sh"
