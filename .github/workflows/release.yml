@@ -10,15 +10,24 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: executing remote ssh commands using password
-      uses: appleboy/ssh-action@master
-      with:
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_KEY" > ~/.ssh/staging.key
+        chmod 600 ~/.ssh/staging.key
+        cat >>~/.ssh/config <<END
+        Host staging
+          HostName $SSH_HOST
+          User $SSH_USER
+          IdentityFile ~/.ssh/staging.key
+          StrictHostKeyChecking no
+        END
+      env:
         sync: true
-        host: ${{ secrets.SSH_HOST_NAME }}
-        username: ${{ secrets.SSH_USERNAME}}
-        password: ${{ secrets.SSH_PASSWORD }}
-        port: ${{ secrets.SSH_PORT }}
-        script: |
-          cd /home/pi/trey/projects/rsb-ts/
-          sudo su - pi && /bin/bash -c "./buildFile.sh"
-          node -v
+        SSH_HOST: ${{ secrets.SSH_HOST_NAME }}
+        SSH_USER: ${{ secrets.SSH_USERNAME }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+      
+    - name: Connect to SSH
+      run: ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST_NAME }}
