@@ -23,7 +23,6 @@ jobs:
           StrictHostKeyChecking no
         END
       env:
-        sync: true
         SSH_HOST: ${{ secrets.SSH_HOST_NAME }}
         SSH_USER: ${{ secrets.SSH_USERNAME }}
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
