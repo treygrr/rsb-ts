@@ -29,4 +29,4 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       
     - name: Connect to SSH
-      run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && sudo git pull && yarn build && pm2 restart && exit 0'
+      run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && sudo git pull && yarn build && pm2 restart all && exit 0'
