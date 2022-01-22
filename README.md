@@ -1,3 +1,4 @@
+[![TSC Continuous Integration](https://github.com/treygrr/rsb-ts/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/treygrr/rsb-ts/actions/workflows/release.yml)
 # RSBUTLER for Discord!
 
 This was written with a lot of coffee and patience to learn TypeScript. 
