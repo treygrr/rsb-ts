@@ -4,7 +4,7 @@ import path from 'path';
 import { dirname, importx } from "@discordx/importer";
 import fs from 'fs';
 import puppeteer from 'puppeteer';
-import { skillList } from './runescapeData/skillList.js';
+import { skillList } from './RunescapeDatas/skillList.js';
 
 interface hbh {
   (): any;
