@@ -1,7 +1,7 @@
 import { ItemData } from "./SearchInterfaces";
 
-export default interface {
+
+export interface hbsData {
   data: ItemData,
   itemHistory: any,
-  
 }
