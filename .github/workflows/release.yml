@@ -20,5 +20,5 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd /home/pi/trey/projects/rsb-ts/ && ls
-          git pull
+          sudo git pull
           sudo ./buildFile.sh
