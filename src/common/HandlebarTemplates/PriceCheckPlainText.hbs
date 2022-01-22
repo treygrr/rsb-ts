@@ -1,0 +1,27 @@
+
+**name: {{ data.name }}**
+```
+type: {{ data.type }}
+description: {{ data.description }}
+members: {{ data.members }}
+
+today:
+    trend: {{ data.today.trend }}
+    price: {{ data.today.price }}
+
+current:
+    trend: {{ data.today.trend }}
+    price: {{ data.today.price }}
+
+30 day trend: 
+    trend: {{ data.day30.trend }}
+    change: {{ data.day30.change}}
+
+90 day trend: 
+    trend: {{ data.day90.trend }}
+    change: {{ data.day90.change}}
+    
+180 day trend: 
+    trend: {{ data.day180.trend }}
+    change: {{ data.day180.change}}
+```
