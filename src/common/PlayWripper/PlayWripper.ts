@@ -1,23 +1,29 @@
-import { ChromiumBrowser, expect, Locator, Page } from '@playwright/test';
+import { Page, chromium, BrowserContext } from '@playwright/test';
+const chrome = await chromium.launch({ headless: false, args: ['--start-maximized', '--no-sandbox'] });
+const context = await chrome.newContext();
+const page = await context.newPage();
+page.goto('https://www.twitter.com');
 
 export default class PlayWripper {
-  browser: ChromiumBrowser;
-  page?: Page;
-  constructor(browser: ChromiumBrowser) {
-    this.browser = browser;
+  public browser: BrowserContext = context;
+
+  async openTab(url?: string): Promise<Page> {
+      const page = await this.browser.newPage();
+      if (url) await page.goto(url);
+      return page;
   }
 
-  async init() {
+  async goTo(page: Page, url: string) {
     try {
-      this.page = await this.browser.newPage();
-    } catch(e) {
+      await page.goto(url);
+    } catch (e) {
       console.log(e);
     }
   }
 
-  async goTo(url: string) {
+  async closeTab(page: Page) {
     try {
-      await this.page?.goto(url);
+      await page.close();
     } catch (e) {
       console.log(e);
     }
