@@ -11,7 +11,7 @@
     "dev": "nodemon --exec node --loader ts-node/esm/transpile-only src/main.ts",
     "updateItems": "node --loader ts-node/esm/transpile-only items.ts",
     "power": "nodemon --exec node --loader ts-node/esm/transpile-only src/common/PowerSearch/PowerSearch.ts",
-    "testing": "nodemon --exec node --loader ts-node/esm/transpile-only src/common/ImageGenerator/main.ts"
+    "testing": "nodemon -e ts,hbs,js --exec node --loader ts-node/esm/transpile-only src/common/ImageGenerator/main.ts"
   },
   "keywords": [],
   "author": "",
