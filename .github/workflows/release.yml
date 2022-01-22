@@ -20,5 +20,5 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd /home/pi/trey/projects/rsb-ts/
-          sudo su pi && /bin/bash -c "./buildFile.sh"
+          sudo su - pi && /bin/bash -c "./buildFile.sh"
           node -v
