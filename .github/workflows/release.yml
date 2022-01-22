@@ -1,4 +1,4 @@
-name: Node CI
+name: TSC Continuous Integration
 
 on:
   push:
