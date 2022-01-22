@@ -15,7 +15,7 @@ jobs:
         mkdir -p ~/.ssh/
         echo "$SSH_KEY" > ~/.ssh/pi.key
         chmod 600 ~/.ssh/pi.key
-        cat >>~/.ssh/pi <<END
+        cat >>~/.ssh/config <<END
         Host pi
           HostName $SSH_HOST
           User $SSH_USER
