@@ -27,6 +27,7 @@ interface DataReturn {
   errorMessages: string[],
   pageData?: PageData,
 }
+
 let searchTerm: string = '';
 
 const search = async (query: string, os = false) => {

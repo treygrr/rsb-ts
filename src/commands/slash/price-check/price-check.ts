@@ -1,8 +1,8 @@
 import { CommandInteraction, MessageActionRow, MessageEmbed, MessageAttachment, MessageSelectMenu, SelectMenuInteraction, CacheType } from "discord.js";
 import { ButtonComponent, Discord, SelectMenuComponent, Slash, SlashOption } from "discordx";
-import { Hbs } from '../../../api/HBars.js';
-import { search } from '../../../api/PowerSearch/PowerSearch.js';
-import { SearchById } from "../../../api/PowerSearch/SearchById.js";
+import { Hbs } from '../../../common/HBars.js';
+import { search } from '../../../common/PowerSearch/PowerSearch.js';
+import { SearchById } from "../../../common/PowerSearch/SearchById.js";
 import { fileURLToPath } from "url";
 import { DataReturn, ItemData } from "../../../Interfaces/SearchInterfaces";
 

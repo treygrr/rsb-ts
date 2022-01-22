@@ -7,8 +7,8 @@ import {
   GuildMember,
 } from "discord.js";
 import { ButtonComponent, Discord, Slash, SlashOption } from "discordx";
-import { UserData } from '../../../api/UserData.js';
-import { Hbs } from '../../../api/HBars.js';
+import { UserData } from '../../../common/UserData.js';
+import { Hbs } from '../../../common/HBars.js';
 import path from 'path';
 import { fileURLToPath } from "url";
 
