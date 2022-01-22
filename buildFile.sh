@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/bin/bash
 echo $PATH
 echo "Node version is $(node -v)"
 # run yarn build and pipe the output to terminal
