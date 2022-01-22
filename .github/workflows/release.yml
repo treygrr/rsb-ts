@@ -13,10 +13,10 @@ jobs:
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
-        echo "$SSH_KEY" > ~/.ssh/staging.key
-        chmod 600 ~/.ssh/staging.key
-        cat >>~/.ssh/config <<END
-        Host staging
+        echo "$SSH_KEY" > ~/.ssh/pi.key
+        chmod 600 ~/.ssh/pi.key
+        cat >>~/.ssh/pi <<END
+        Host pi
           HostName $SSH_HOST
           User $SSH_USER
           IdentityFile ~/.ssh/staging.key
@@ -30,4 +30,4 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       
     - name: Connect to SSH
-      run: ssh staging
+      run: ssh pi
