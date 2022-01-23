@@ -2,7 +2,7 @@ import { ItemData } from "../../Interfaces/SearchInterfaces.js";
 import GrandExchangeSearch from "../GrandExchangeSearch/GrandExchangeSearch.js";
 import PlayWripper from "../PlayWripper/PlayWripper.js";
 import ImageGenerator from "./ImageGenerator.js";
-
+import { SearchById } from "../GrandExchangeSearch/SearchById.js";
 const browser = new PlayWripper();
 
 const itemData: ItemData = {
@@ -14,11 +14,12 @@ const itemData: ItemData = {
   change: '+1.00',
 }
 
-const data = new GrandExchangeSearch({ oldschool: true });
+const data = new GrandExchangeSearch({ oldschool: false });
 
-const searchResults = await data.search({ searchQuery: 'dragon sword', disableAll: true });
+const searchResults = await data.search({ searchQuery: 'dragon', disableAll: true });
 
 if (searchResults) {
+  // const result = await new SearchById(searchResults.matchedResults[0].id, false).getItemData();
   const image = new ImageGenerator(searchResults, 'ResultsTable');
   await image.generateImage();
 }

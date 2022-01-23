@@ -1,12 +1,12 @@
-import { CommandInteraction, MessageActionRow, MessageEmbed, MessageAttachment, MessageSelectMenu, SelectMenuInteraction, CacheType } from "discord.js";
-import { ButtonComponent, Discord, SelectMenuComponent, Slash, SlashOption } from "discordx";
-import { Hbs } from '../../../common/HBars.js';
-import { search } from '../../../common/PowerSearch/PowerSearch.js';
-import { SearchById } from "../../../common/PowerSearch/SearchById.js";
-import { fileURLToPath } from "url";
-import { DataReturn, ItemData } from "../../../Interfaces/SearchInterfaces";
+import { CommandInteraction, SelectMenuInteraction, CacheType } from "discord.js";
+import { Discord, Slash, SlashOption } from "discordx";
 
-const hbs = new Hbs(fileURLToPath(import.meta.url));
+import { DataReturn } from "../../../Interfaces/SearchInterfaces";
+
+import GrandExchangeSearch from "../../../common/GrandExchangeSearch/GrandExchangeSearch.js";
+import { SearchById } from "../../../common/GrandExchangeSearch/SearchById.js";
+import ImageGenerator from "../../../common/ImageGenerator/ImageGenerator.js";
+import { qwuip } from "../../../common/RunescapeDatas/qwuips.js";
 
 @Discord()
 class buttonExample {
@@ -16,6 +16,7 @@ class buttonExample {
   itemId!: number;
   selections: any[] = [];
   itemData!: DataReturn;
+
   @Slash("price-check", { description: "Check the prices of items on the GE by searching for item names or ids." })
   async priceCheck(
     @SlashOption("name", { type: "STRING", description: "The item name to search", required: false })
@@ -25,26 +26,24 @@ class buttonExample {
     itemId: string,
     osrs: boolean,
     interaction: CommandInteraction,
-    menuInteraction: SelectMenuInteraction
-  ) {
+  ) 
+  {
     await interaction.deferReply();
 
     if (!itemName && !itemId) {
       await interaction.editReply("You need to provide either an item name or an item id. 😬");
       return
     }
+
     this.osrs = osrs;
+
     if (itemName) {
 
       this.itemName = itemName;
 
-      const itemData = await search(itemName, osrs ?? false);
+      const data = new GrandExchangeSearch({ oldschool: this.osrs });
 
-      const attachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'itemSearch.png');
-
-      if (!itemData) {
-        await interaction.editReply('I could not find data for some reason. 🥴');
-      } 
+      const itemData = await data.search({ searchQuery: this.itemName, disableAll: true });
 
       if (itemData?.errors) {
         await interaction.editReply(itemData.errorMessages.join('\n'));
@@ -57,19 +56,12 @@ class buttonExample {
       }
 
       if (itemData?.matchedResults?.length === 1) {
-        await this.replyWithExactMatch(interaction, attachment)
-        this.itemId = parseInt(itemData.matchedResults[0].id);
-        await this.getSingleItem(itemData.matchedResults[0].id, interaction);
+        await this.replyWithExactMatch(interaction, itemData);
         return;
       }
 
-      if (itemData?.matchedResults?.length < 25) {
-        await this.replyWithDropdown(itemData.matchedResults, interaction, attachment);
-        return
-      }
-
-      if (itemData?.matchedResults?.length > 25) {
-        await this.replyWithoutDropdown(itemData.matchedResults, interaction, attachment);
+      if (itemData?.matchedResults?.length > 1) {
+        await this.replyWithFoundItems(itemData, interaction);
       }
 
       return;
@@ -77,85 +69,38 @@ class buttonExample {
 
     if (itemId) {
       this.itemId = parseInt(itemId);
+
       await this.getSingleItem(itemId, interaction);
     }
   }
 
-  async replyWithDropdown(itemData: { name: any; id: any; }[], interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
-    const embed = new MessageEmbed()
-    .setTitle(`${itemData.length} results found for ${this.itemName}`)
-    .setDescription('Select the item you want to see more info about!')
-    .setImage(`attachment://itemSearch.png`);
-    const selections: any[] = [];
-    itemData.forEach(async (item) => {
-      this.selections.push(
-        {
-          label: `${item.name} - ${item.id}`,
-          value: item.id
-        }
-      )
-    });
+  async replyWithExactMatch(interaction: CommandInteraction<CacheType>, itemData: DataReturn) {
+    const searchById = await new SearchById(itemData.matchedResults[0].id, this.osrs).getItemData();
 
-    const menu = new MessageSelectMenu()
-      .addOptions(this.selections)
-      .setCustomId("item-menu");
+    const image = new ImageGenerator(searchById, 'SingleResult');
 
-    const buttonRow = new MessageActionRow().addComponents(menu);
-    try {
-      await interaction.editReply({ embeds: [embed], files: [attachment], components: [buttonRow] });
-    }
-    catch(er) {
-      embed.setDescription('Something went wrong when setting up the dropdown.\nUse /price-check again but instead of a name, use the ID from the image!');
-      await interaction.editReply({ embeds: [embed], files: [attachment] });
-    }
+    await image.generateImage();
+
+    await interaction.editReply({ content: qwuip(itemData.matchedResults[0].name), files: [image.attachment.attachment] });
   }
 
-  async replyWithoutDropdown(itemData: { name: any; id: any; }[], interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
+  async replyWithFoundItems(dataReturn: DataReturn, interaction: CommandInteraction<CacheType>) {
+    const image = new ImageGenerator(dataReturn, 'ResultsTable');
 
-    const embed = new MessageEmbed()
-      .setTitle(`${itemData.length} results found for ${this.itemName}`)
-      .setDescription('Discord limits how many options can be in a drop down.\nBecause this search has more than 25 results you have to\ndo /price-check again but instead of a name, use the ID from the image!')
-      .setImage(`attachment://itemSearch.png`)
+    await image.generateImage();
 
+    await interaction.editReply({ content: qwuip(this.itemName), files: [image.attachment.attachment] });
 
-    await interaction.editReply({ embeds: [embed], files: [attachment] });
     return
   }
 
-  async replyWithExactMatch(interaction: CommandInteraction<CacheType>, attachment: MessageAttachment) {
-    const hbs = new Hbs(fileURLToPath(import.meta.url));
-    hbs.getHandleBarsTemplateCompiled
-    const moreDataAttachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'data.png');
-    const evenMoreData = new MessageAttachment(`./src/itemDataBase/screenshots/${this.itemName}.png`, 'stff.png');
-
-    await interaction.editReply({ content: 'LOL here we go.', files: [attachment, moreDataAttachment, evenMoreData] });
-  }
-  
   async getSingleItem(itemId: string, interaction: CommandInteraction<CacheType> | SelectMenuInteraction) {
     const searchById = await new SearchById(itemId, this.osrs).getItemData();
-    if (searchById.item) {
-      console.log(searchById.item);
-      await interaction.followUp(hbs.getHandleBarsTemplateCompiled({ single: true, data: {...searchById.item} }));
-      return;
-    }
-    await interaction.followUp('Welp looks like something broke. 😬');
-  }
+    
+    const image = new ImageGenerator(searchById, 'SingleResult');
 
+    await image.generateImage();
 
-  @SelectMenuComponent("item-menu")
-  async handle(interaction: SelectMenuInteraction): Promise<unknown> {
-    await interaction.deferReply();
-
-    // extract selected value by member
-    const itemValue = interaction.values?.[0];
-
-    // if value not found
-    if (!itemValue || itemValue === undefined || itemValue === null || itemValue === '' || itemValue === 'undefined') {
-      return await interaction.followUp("Invalid Item ID, select again 👹");
-    }
-    const itemId = this.selections.find((r) => r.value === itemValue)?.value;
-
-    this.getSingleItem(itemId, interaction)
-    return;
+    await interaction.editReply({ content: qwuip(searchById.data.name), files: [image.attachment.attachment] });
   }
 }

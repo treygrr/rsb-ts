@@ -1,7 +1,8 @@
-import { ItemData } from "./SearchInterfaces";
+import { DataReturn } from "./SearchInterfaces";
 
-
-export interface hbsData {
-  data: ItemData,
-  itemHistory: any,
+export interface HistoryResults {
+  graph?: any,
+  data?: any,
+  errors: boolean,
+  errorMessages: string[],
 }

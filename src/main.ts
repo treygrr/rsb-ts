@@ -3,7 +3,9 @@ import { Intents, Interaction, Message } from "discord.js";
 import { Client } from "discordx";
 import { dirname, importx } from "@discordx/importer";
 import dotenv from 'dotenv';
+import PlayWripper from "./common/PlayWripper/PlayWripper.js";
 
+const browser = new PlayWripper();
 // set a global variable for the root directory
 
 dotenv.config();
@@ -61,3 +63,8 @@ async function run() {
 }
 
 run();
+
+// when process.exit is called, the browser will close
+process.on('exit', async () => {
+  await browser.browser.close();
+});

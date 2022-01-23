@@ -1,21 +1,27 @@
 import { Page } from '@playwright/test';
 import Handlebars from 'handlebars';
-import PlayWripper from '../PlayWripper/PlayWripper.js';
+import { MessageAttachment } from 'discord.js';
 import fs from 'node:fs';
-import hbsHelpers from '../HandlebarHelpers/index.js';
+
 import { DataReturn, ItemData } from '../../Interfaces/SearchInterfaces.js';
+import { HistoryResults } from '../../Interfaces/HBSInterfaces.js';
+
+import hbsHelpers from '../HandlebarHelpers/index.js';
+import PlayWripper from '../PlayWripper/PlayWripper.js';
 
 export default class ImageGenerator extends PlayWripper {
   private page?: Page;
   private template: string;
-  private hbsData: DataReturn | ItemData;
+  private hbsData: DataReturn | ItemData | HistoryResults;
   private handlebars = Handlebars;
   public fileName: String;
+  public attachment!: MessageAttachment;
 
-  constructor(data: DataReturn | ItemData, template: string) {
+  constructor(data: DataReturn | ItemData| HistoryResults, template: string) {
     super();
 
     this.template = template;
+
     this.hbsData = data;
 
     this.fileName = this.generateRandomFileName();
@@ -25,9 +31,14 @@ export default class ImageGenerator extends PlayWripper {
 
   async generateImage () {
     this.page = await this.browser.newPage();
+
     await this.page.setContent(this.compiledTemplate());
+
     await this.screenShot();
+
     await this.page.close();
+
+    this.attachment = new MessageAttachment(`./src/itemDataBase/screenshots/${this.fileName}.png`, 'itemSearch.png');
   }
 
   private registerHelpers() {
@@ -41,17 +52,26 @@ export default class ImageGenerator extends PlayWripper {
   }
 
   private compiledTemplate (): any {
-    console.log('Template compiled', this.hbsData);
+    if (process.env.MODE === "development") {
+      console.log('Template compiled', this.hbsData);
+    }
     return this.handlebars.compile(this.getTemplateFile())(this.hbsData);
   }
 
   private async screenShot () {
     try {
-      const table = await this.page?.$('body > div > div > table');
+      const table = await this.page?.$('body');
       if (!table) return;
       const boundingBox = await table?.boundingBox();
       console.log('Saved a screenshot titled: ' + this.fileName + '.png');
-      await this.page?.screenshot({path: `./src/itemDataBase/screenshots/${this.fileName}.png`, clip: {x: 0, y: 0, width: boundingBox?.width ?? 0, height: boundingBox?.height ?? 0 } });  
+      await this.page?.screenshot(
+        {
+          path: `./src/itemDataBase/screenshots/${this.fileName}.png`,
+          omitBackground: true,
+          clip: {x: 0, y: 0, width: boundingBox?.width ?? 0, height: boundingBox?.height ?? 0 },
+          fullPage: true 
+        }
+      );  
     } catch (error) {
       console.log(error);
     }

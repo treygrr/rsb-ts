@@ -1,0 +1,207 @@
+<!doctype html>
+<head>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      max-width: 500px;
+      font-family: sans-serif;
+    }
+    .container {
+      box-sizing: border-box;
+      padding: 10px;
+    }
+    .row {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+    }
+    .col-1 {
+      width: 8.3333%;
+    }
+    .col-2 {
+      width: 16.6666%;
+    }
+    .col-3 {
+      width: 25%;
+    }
+    .col-4 {
+      width: 33.3333%;
+    }
+    .col-5 {
+      width: 41.6666%;
+    }
+    .col-6 {
+      width: 50%;
+    }
+    .col-7 {
+      width: 58.3333%;
+    }
+    .col-8 {
+      width: 66.6666%;
+    }
+    .col-9 {
+      width: 75%;
+    }
+    .col-10 {
+      width: 83.3333%;
+    }
+    .col-11 {
+      width: 91.6666%;
+    }
+    .col-12 {
+      width: 100%;
+    }
+    .pa-1 {
+      padding: 8px;
+    }
+    .pa-2 {
+      padding: 16px;
+    }
+    .pa-3 {
+      padding: 24px;
+    }
+    .pa-4 {
+      padding: 32px;
+    }
+    .ma-1 {
+      margin: 8px;
+    }
+    .ma-2 {
+      margin: 16px;
+    }
+    .ma-3 {
+      margin: 24px;
+    }
+    .ma-4 {
+      margin: 32px;
+    }
+    .img {
+      width: 100%;
+      margin: 0;
+      height: auto;
+      background-color: grey;
+      border-radius: 100%;
+      box-shadow: 0 0 10px {{ isUp data.today.price }};
+      border: 3px solid {{ isUp data.today.price }};
+    }
+    .img img {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(5px 5px 5px #222);
+    }
+    .bgGradient {
+      box-shadow: 0 0 10px {{ isUp data.today.price }};
+      border-radius: 6px;
+      border: 1px solid grey;
+      background: rgb(159,159,159);
+      background: linear-gradient(0deg, rgba(159,159,159,1) 0%, rgba(206,206,206,1) 10%, rgba(246,246,246,1) 20%, rgba(255,255,255,1) 33%);
+    }
+    .bold {
+      font-weight: bold;
+    }
+    .green {
+      color: green;
+    }
+    .red {
+      color: red;
+    }
+    .black {
+      color: black;
+    }
+    hr {
+      width: 100%;
+      border-top: 1px solid grey;
+      border-bottom: 0px;
+      border-right: 0px;
+      border-left: 0px;
+    }
+    h1, h2, h3, h4, h5, p {
+      padding: 0;
+      margin: 0;
+    }
+    p.small {
+      font-size: 0.8em;
+    }
+  </style>
+</head>
+<html>
+
+<body>
+  <section class="container">
+    <div class="bgGradient">
+      <div class="row">
+        <div class="col-2 pa-2">
+          <figure class="img">
+            <img src="{{ data.icon_large }}" alt="{{ data.name }}">
+          </figure>
+        </div>
+        <div class="col-10 pa-2">
+          <h1>{{ data.name }}</h1>
+          <p class="small">{{ data.description }}</p>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-10 pa-2">
+          <h4>Current Grand Exchange Price:</h4>
+        </div>
+        <div class="col-2 pa-2">
+          <span class="{{isUp data.current.price}} bold">
+            {{ data.current.price }}
+          </span>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col-8 pa-2">
+          Today's Trend:
+        </div>
+        <div class="col-2 pa-2">
+          Change
+        </div>
+        <div class="col-2 pa-2">
+          <span class="{{isUp data.today.price }} bold">
+            {{ data.today.price }}
+          </span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-8 pa-2">
+          30 Day Trend:
+        </div>
+        <div class="col-2 pa-2">
+          Change
+        </div>
+        <div class="col-2 pa-2">
+          <span class="{{isUp data.day30.change}} bold">{{ data.day30.change }}</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-8 pa-2">
+          90 Day Trend:
+        </div>
+        <div class="col-2 pa-2">
+          Change
+        </div>
+        <div class="col-2 pa-2">
+          <span class="{{isUp data.day90.change}} bold">{{ data.day90.change }}</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-8 pa-2">
+          180 Day Trend:
+        </div>
+        <div class="col-2 pa-2">
+          Change
+        </div>
+        <div class="col-2 pa-2">
+          <span class="{{isUp data.day180.change}} bold">{{ data.day180.change }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+
+</html>
