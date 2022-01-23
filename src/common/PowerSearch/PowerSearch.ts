@@ -200,7 +200,7 @@ const checkForMatches = (query: string, item: any): ItemData[] => {
 
 
 const getHandleBarsTemplateFile = (): string => {
-  return fs.readFileSync(`./src/api/PowerSearch/ResultsTable.hbs`, 'utf8');
+  return fs.readFileSync(`./src/common/PowerSearch/ResultsTable.hbs`, 'utf8');
 }
 
 const getHandleBarsTemplateCompiled = (items: any): any =>{
