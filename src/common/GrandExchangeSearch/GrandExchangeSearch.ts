@@ -8,7 +8,7 @@ export default class GrandExchangeSearch extends PlayWripper {
   data: DataReturn;
   oldschool: Boolean;
 
-  constructor() {
+  constructor(settings?: { oldschool?: boolean}) {
     super();
     this.data = {
       matchedResults: [],
@@ -19,32 +19,34 @@ export default class GrandExchangeSearch extends PlayWripper {
         totalPageNumber: 0,
       },
     }
+    if (settings?.oldschool) {
+      this.oldschool = settings.oldschool;
+    } else {
+      this.oldschool = false;
+    }
   }
   
-  async search(searchSettings: { searchQuery?: string, disableAll?: boolean }, oldschool: boolean = false) {
+  async search(searchSettings: { searchQuery?: string, disableAll?: boolean }) {
     if (!searchSettings) {
       this.data.errors = true;
       this.data.errorMessages.push('Search settings not provided');
       return this.data;
     }
-    this.oldschool = oldschool;
 
     this.searchQuery = searchSettings.searchQuery;
 
     this.page = await this.browser.newPage();
 
     this.resourceDisabler(searchSettings.disableAll);
-    if (this.oldschool) {
-      await this.page?.goto('https://secure.runescape.com/m=itemdb_oldschool/results?query=${this.searchQuery}');
-    } else {
-      await this.page?.goto('https://secure.runescape.com/m=itemdb_rs/results?query=${this.searchQuery}');
-    }
+    await this.page?.goto(`https://secure.runescape.com/m=${this.oldschool? 'itemdb_oldschool' : 'itemdb_rs'}/results?query=${this.searchQuery}`);
 
     if (await this.findResults()) return;
 
     if (await this.getPageData()) return;
 
     if (await this.getDataFromPages()) return;
+
+    this.close();
 
     return this.data;
   }
