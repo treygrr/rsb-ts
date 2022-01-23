@@ -1,4 +1,5 @@
 <!doctype html>
+
 <head>
   <style>
     body {
@@ -6,19 +7,24 @@
       margin: 0;
       background-color: transparent;
     }
+
     .bold {
       font-weight: bold;
     }
+
     .green {
       color: green;
     }
+
     .red {
       color: red;
     }
+
     div {
       min-width: 400px;
       max-width: 750px;
     }
+
     .styled-table {
       border-collapse: collapse;
       width: 100%;
@@ -61,6 +67,7 @@
   </style>
 </head>
 <html>
+
 <body>
   <div>
     <div>
@@ -76,7 +83,7 @@
           </tr>
         </thead>
         <tbody>
-          {{#each data}}
+          {{#each matchedResults}}
           <tr>
             <td><img src="{{this.image}}"></td>
             <td>{{this.name}}</td>
@@ -85,14 +92,14 @@
             <td>{{this.price}}</td>
             <td>
               <span class="bold {{isUp this.change}}">
-              {{this.change}}
-              <span>
+                {{this.change}}
+                <span>
             </td>
           </tr>
           {{/each}}
         </tbody>
       </table>
-      </div>
+    </div>
   </div>
 </body>
 
