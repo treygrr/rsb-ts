@@ -14,7 +14,7 @@ export interface PageData {
 
 export interface DataReturn {
   matchedResults: ItemData[],
-  errors?: Boolean,
+  errors: Boolean,
   errorMessages: string[],
-  pageData?: PageData,
+  pageData: PageData,
 }
