@@ -40,7 +40,6 @@ const search = async (query: string, os = false) => {
     }
   }
   let browser;
-  console.log('Search Query:', query);
   if (process.arch === 'arm64') {
     browser = await puppeteerCore.launch({ args: ['--start-maximized'], defaultViewport: null, executablePath: '/usr/bin/chromium-browser' });
 
@@ -102,7 +101,6 @@ const search = async (query: string, os = false) => {
 
     // check for matches
     data.matchedResults = checkForMatches(query, data?.matchedResults ?? []);
-    console.log('after match results', data.matchedResults)
     if (data.matchedResults?.length >= 1) {
       if (data.matchedResults.length === 1) {
         await screenShotResults(browser, data.matchedResults)
@@ -117,7 +115,6 @@ const search = async (query: string, os = false) => {
 
     if (data.matchedResults?.length === 0 && data?.matchedResults?.length) {
       await screenShotResults(browser, data?.matchedResults);
-      console.log('No exact match found, but results found!', data.matchedResults.length);
       await browser.close();
       return data;
     }
