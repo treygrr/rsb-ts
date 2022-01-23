@@ -8,6 +8,7 @@ This was written with a lot of coffee and patience to learn TypeScript.
     - Get All User Stats
   - Price Search via
     - Grand Exchange Search
+      - Rewrite for maximum speed utilizing PlayWright
     - Item ID Search
 # Stretch Goals
   - Store item ID -> Names in database for indexing and SPEED BOI (Postgres?)
