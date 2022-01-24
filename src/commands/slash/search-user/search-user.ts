@@ -49,7 +49,7 @@ class buttonExample {
 
     await interaction.editReply({ files: [image.attachment.attachment] });
   }
-
+ 
   @ButtonComponent("skills-btn")
   async mybtn(interaction: ButtonInteraction) {
 
