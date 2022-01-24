@@ -1,4 +1,4 @@
-import { CommandInteraction, SelectMenuInteraction, CacheType } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
 
 import { DataReturn } from "../../../Interfaces/SearchInterfaces";
@@ -74,7 +74,7 @@ class buttonExample {
     }
   }
 
-  async replyWithExactMatch(interaction: CommandInteraction<CacheType>, itemData: DataReturn) {
+  async replyWithExactMatch(interaction: CommandInteraction, itemData: DataReturn) {
     const searchById = await new SearchById(itemData.matchedResults[0].id, this.osrs).getItemData();
 
     const image = new ImageGenerator(searchById, 'SingleResult');
@@ -84,7 +84,7 @@ class buttonExample {
     await interaction.editReply({ content: qwuip(itemData.matchedResults[0].name), files: [image.attachment.attachment] });
   }
 
-  async replyWithFoundItems(dataReturn: DataReturn, interaction: CommandInteraction<CacheType>) {
+  async replyWithFoundItems(dataReturn: DataReturn, interaction: CommandInteraction) {
     const image = new ImageGenerator(dataReturn, 'ResultsTable');
 
     await image.generateImage();
@@ -94,7 +94,7 @@ class buttonExample {
     return
   }
 
-  async getSingleItem(itemId: string, interaction: CommandInteraction<CacheType> | SelectMenuInteraction) {
+  async getSingleItem(itemId: string, interaction: CommandInteraction) {
     const searchById = await new SearchById(itemId, this.osrs).getItemData();
     
     const image = new ImageGenerator(searchById, 'SingleResult');

@@ -14,7 +14,7 @@ export class UserData {
             const data = await request.json();
             return data;
         } catch (error: any) {
-            throw new Error(error);
+            console.log(error);
         }
     }
 

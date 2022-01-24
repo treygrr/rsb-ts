@@ -11,6 +11,7 @@ import { UserData } from '../../../common/UserData.js';
 import { Hbs } from '../../../common/HBars.js';
 import path from 'path';
 import { fileURLToPath } from "url";
+import ImageGenerator from "../../../common/ImageGenerator/ImageGenerator.js";
 
 const hbs = new Hbs(fileURLToPath(import.meta.url));
 
@@ -40,10 +41,12 @@ class buttonExample {
     if (userData.error) {
       return interaction.editReply("User not found 😬");
     }
-    interaction.editReply({
-      content: hbs.getHandleBarsTemplateCompiled({ basic: true, ...userData }),
-      components: [row],
-    });
+    
+    const image = new ImageGenerator(userData, 'SearchUser');
+
+    await image.generateImage();
+
+    await interaction.editReply({ files: [image.attachment.attachment] });
   }
 
   @ButtonComponent("skills-btn")
@@ -53,6 +56,7 @@ class buttonExample {
       return interaction.reply('This button does not work anymore.😢');
     }
     interaction.deferReply();
+    
     const userData = await new UserData(this.username).getUserData();
     interaction.editReply(hbs.getHandleBarsTemplateCompiled({ showSkills: true, ...userData}));
   }
