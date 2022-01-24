@@ -10,7 +10,7 @@ const qwuips = [
   "Holy hell that was a real weird request, but I found {{itemName}}!",
   "I looked far and wide for {{itemName}}, high and low. Here you go!",
   "Looking for {{itemName}} gave me a real migrane.",
-  "I found {{itemName}}, now can you get Steven to stop staring at me?",
+  "I found {{itemName}}, now can you get Stephen* (not Steven) to stop staring at me?",
 ]
 
 export function qwuip (itemName: string) {
