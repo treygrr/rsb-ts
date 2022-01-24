@@ -11,10 +11,16 @@ export class UserData {
     async getUserData() {
         try {
             const request = await fetch(`https://apps.runescape.com/runemetrics/profile/profile?user=${this.userName}&activities=20`);
-            const data = await request.json();
-            return data;
-        } catch (error: any) {
-            console.log(error);
+            if (request.status === 200) {
+                const data = await request.json();
+                return data;
+            }
+        throw new Error('Request failed when searching for user 😱');
+        } catch (error) {
+            const errors = {
+                error
+            }
+            return errors;
         }
     }
 

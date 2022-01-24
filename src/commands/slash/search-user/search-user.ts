@@ -38,8 +38,9 @@ class buttonExample {
     }
     this.username = username;
     const userData = await new UserData(username).getUserData();
-    if (userData.error) {
-      return interaction.editReply("User not found 😬");
+    if (userData?.error) {
+      console.log(userData.error.message)
+      return interaction.editReply(userData.error.message);
     }
     
     const image = new ImageGenerator(userData, 'SearchUser');
