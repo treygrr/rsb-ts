@@ -30,7 +30,7 @@ jobs:
     - name: Pull latest changes
       run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && sudo git pull && exit 0'
     - name: Yarn Install
-      run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && yarn && exit 0'
+      run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && node -v && yarn && exit 0'
     - name: Build the Project
       run: ssh -tt pi 'cd /home/pi/trey/projects/rsb-ts && yarn build && exit 0'
     - name: Restart the Service
